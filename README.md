@@ -77,10 +77,18 @@ Model a **coffee order system** using only types and pure functions:
 ## Getting Started
 
 ```bash
-# Create solution and first project
-dotnet new sln -n FSharpWorkout
-dotnet new console -lang F# -o src/Session01
-dotnet sln add src/Session01
+# Build all projects
+dotnet build
+
+# Run a specific session
+dotnet run --project src/Session01
+
+# Run with watch (auto-reload on save)
+dotnet watch run --project src/Session01
+
+# Build and run the full solution
+dotnet build FSharpWorkout.sln
+dotnet run --project src/Session01
 ```
 
 ## Patterns Worth Studying
