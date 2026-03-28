@@ -19,8 +19,8 @@ module CoffeeOrder
  type CupSize = Small | Medium | Large
  
 // --- Step 2: Milk options ---
-// type Milk = ...
-
+ type Milk = Option of NONE | OAT | ALMOND | WHOLE
+ 
 // --- Step 3: Drinks ---
 // Think: which drink MUST carry milk data?
 // type Drink = ...
