@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "3+7PU2JsaxQ=",
+  "success": true,
+  "projectFilePath": "/mydata/codes/2026/fsharp-workout/src/Session01/Session01.fsproj",
+  "expectedPackageFiles": [
+    "/home/kiquetal/.nuget/packages/fsharp.core/10.0.101/fsharp.core.10.0.101.nupkg.sha512"
+  ],
+  "logs": []
+}
