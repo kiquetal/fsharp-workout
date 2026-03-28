@@ -16,8 +16,8 @@ module CoffeeOrder
 // ============================================
 
 // --- Step 1: Cup sizes ---
-// type CupSize = ...
-
+ type CupSize = Small | Medium | Large
+ 
 // --- Step 2: Milk options ---
 // type Milk = ...
 
