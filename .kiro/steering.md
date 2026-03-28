@@ -3,9 +3,12 @@
 ## Overview
 A learning and practice project for F# functional programming, with strong emphasis on type-driven development.
 
-## Tech Stack
-- Language: F# (.NET)
+## Environment
+- OS: Linux
+- Runtime: .NET 10
+- Language: F# 10
 - Paradigm: Functional-first, type-driven design
+- All CLI examples must use Linux-compatible commands and `dotnet` CLI for .NET 10
 
 ## Conventions
 - Prefer discriminated unions over class hierarchies
