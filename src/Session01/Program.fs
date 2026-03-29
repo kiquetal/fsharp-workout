@@ -28,22 +28,27 @@ type Drink =
         | Americano
         | Latte of Milk
         | Cappuccino of Milk
-        
+
+type InvalidCustomization = string
+type CustomizationType = EXTRA_SHOT | SYRUP of string | WHIPPED_CREAM
+
 // --- Step 4: Order record ---
 type Order =
         { Drink: Drink
           Size: CupSize
-          Quantity: int }
+          Quantity: int
+          Customizations: CustomizationType list 
+         }
 // --- Step 5: Raw input & validation ---
 // This represents unvalidated input (e.g., from a user)
-type InvalidCustomization = string
-type CustomizationType = EXTRA_SHOT | SYRUP of string | WHIPPED_CREAM
+
 type RawOrder = { DrinkName: string; Size: string; Milk: string option; Quantity: int ; Customizations: string list }
 type OrderError =
     | InvalidDrink of string
     | InvalidSize of string
     | InvalidMilk of string
     | InvalidQuantity of int
+    | InvalidCustomization of string
 // type OrderError = ...
 let validate (raw: RawOrder) : Result<Order, OrderError> =
      
@@ -98,11 +103,12 @@ let validate (raw: RawOrder) : Result<Order, OrderError> =
                 | Error e, _ -> Error e
                 | _, Error e -> Error e) (Ok [])
          
-     match result, sizeResult, quantityResult with
-     | Ok drink, Ok size, Ok qty -> Ok { Drink = drink; Size = size; Quantity = qty }
-     | Error e, _, _ -> Error e
-     | _, Error e, _ -> Error e
-     | _, _, Error e -> Error e
+     match result, sizeResult, quantityResult, validateAllResult with
+     | Ok drink, Ok size, Ok qty , Ok cs-> Ok { Drink = drink; Size = size; Quantity = qty; Customizations = cs }
+     | Error e, _, _, _ -> Error e
+     | _, Error e, _ , _ -> Error e
+     | _, _, Error e, _-> Error e
+     | _, _, _, Error e -> Error  e 
         
  //suppose i want a customization
 
@@ -135,9 +141,9 @@ let price (order: Order) : decimal =
 // Uncomment and test when ready:
 [<EntryPoint>]
 let main _ =
-     let raw = { DrinkName = "latte"; Size = "medium"; Milk = Some "oat"; Quantity = 2 }
-     let badRaww = { DrinkName = "latte"; Size = "medium"; Milk = Some "oat"; Quantity = -1 }
-     let badCapuccinoOrder = { DrinkName = "cappuccino"; Size = "medium"; Milk = None; Quantity = 1 }
+     let raw = { DrinkName = "latte"; Size = "medium"; Milk = Some "oat"; Quantity = 2 ; Customizations = []}
+     let badRaww = { DrinkName = "latte"; Size = "medium"; Milk = Some "oat"; Quantity = -1 ; Customizations = []}
+     let badCapuccinoOrder = { DrinkName = "cappuccino"; Size = "medium"; Milk = None; Quantity = 1 ; Customizations= []}
      let allOrders = [raw; badRaww; badCapuccinoOrder]
      let results = allOrders |> List.map validate
      results |> List.iter (function
