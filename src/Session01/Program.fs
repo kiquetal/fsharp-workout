@@ -50,6 +50,15 @@ type OrderError =
     | InvalidQuantity of int
     | InvalidCustomization of string
 // type OrderError = ...
+let parseMilk (milkStr: string option) : Result<Milk, OrderError> =
+    match milkStr with
+    | Some milstr -> 
+        match milstr.ToLower() with
+        | "oat" -> Ok OAT
+        | "almond" -> Ok ALMOND
+        | "whole" -> Ok WHOLE
+        | _ -> Error (InvalidMilk milstr)
+    | None -> Error (InvalidMilk "missing")
 let validate (raw: RawOrder) : Result<Order, OrderError> =
      
      let result =
@@ -59,24 +68,8 @@ let validate (raw: RawOrder) : Result<Order, OrderError> =
                 | Some _ -> Error (InvalidMilk "espresso cannot have milk")
                 | None -> Ok (Espresso)
          | "americano" -> Ok (Americano)
-         | "latte" ->
-             match raw.Milk with
-             | Some milstr -> 
-                 match milstr.ToLower() with
-                 | "oat" -> Ok (Latte OAT)
-                 | "almond" -> Ok (Latte ALMOND)
-                 | "whole" -> Ok (Latte WHOLE)
-                 | _ -> Error (InvalidMilk milstr)
-             | None -> Error (InvalidMilk "missing")
-         | "cappuccino" ->
-                match raw.Milk with
-                | Some milstr -> 
-                    match milstr.ToLower() with
-                    | "oat" -> Ok (Cappuccino OAT)
-                    | "almond" -> Ok (Cappuccino ALMOND)
-                    | "whole" -> Ok (Cappuccino WHOLE)
-                    | _ -> Error (InvalidMilk milstr)
-                | None -> Error (InvalidMilk "missing")
+         | "latte" -> parseMilk raw.Milk |> Result.map Latte
+         | "cappuccino" -> parseMilk raw.Milk |> Result.map Cappuccino
          | other -> Error (InvalidDrink other)
          
      let sizeResult = 
@@ -136,6 +129,7 @@ let price (order: Order) : decimal =
         basePrice * sizeMultiplier * decimal order.Quantity
      
         
+
 
 // --- Try it out ---
 // Uncomment and test when ready:
