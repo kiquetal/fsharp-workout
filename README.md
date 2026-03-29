@@ -148,6 +148,81 @@ let parseDrink (raw: RawOrder) : Result<Drink, string> =
 The `d` and `m` are just variable names that capture whatever string didn't match any case above.
 If someone sends `"mocha"`, then `d = "mocha"` and you return `Error "Unknown drink: mocha"`.
 
+## Learning: Complex Types — Transcription Job Example
+
+A real-world example: modeling a podcast transcription API. Shows how DUs carry different data per state,
+how lists work inside types, and how you "update" without mutation.
+
+```fsharp
+// Single-case DU — wraps a string so you can't mix up IDs
+type TranscriptionId = TranscriptionId of string
+
+type AudioFormat = Mp3 | Wav | Flac
+
+type AudioFile = {
+    FileName: string
+    Format: AudioFormat
+    DurationSeconds: float
+}
+
+// A transcription is made of segments — each with timing, text, and confidence
+type Segment = {
+    Start: float
+    End: float
+    Text: string
+    Confidence: float
+}
+
+type TranscriptionError =
+    | UnsupportedFormat of string
+    | FileTooLarge
+    | ApiFailure of string
+
+// Each state carries ONLY the data that makes sense for it
+type TranscriptionState =
+    | Queued                              // no extra data
+    | Processing of progress: float       // how far along
+    | Completed of segments: Segment list // the result — a LIST of segments
+    | Failed of TranscriptionError        // what went wrong
+
+type TranscriptionJob = {
+    Id: TranscriptionId
+    Audio: AudioFile
+    State: TranscriptionState
+}
+```
+
+### Creating and "updating" a job (no mutation)
+
+```fsharp
+let updateState (job: TranscriptionJob) (newState: TranscriptionState) : TranscriptionJob =
+    { job with State = newState }
+
+// Start with a queued job
+let job = {
+    Id = TranscriptionId "abc"
+    Audio = { FileName = "ep01.mp3"; Format = Mp3; DurationSeconds = 1800.0 }
+    State = Queued
+}
+
+// Move through states — each returns a NEW job
+let job2 = updateState job (Processing 0.5)
+
+let job3 = updateState job2 (Completed [
+    { Start = 0.0; End = 5.2; Text = "Welcome to the show"; Confidence = 0.95 }
+    { Start = 5.2; End = 12.1; Text = "Today we talk about F#"; Confidence = 0.91 }
+])
+
+let job4 = updateState job (Failed (ApiFailure "timeout"))
+```
+
+### Key takeaways
+
+- `Segment list` — that's how you put a list inside a type. `list` is a built-in F# type, `Segment list` means "a list of Segments"
+- `{ job with State = ... }` — copy the job, change one field. No mutation. The old `job` still exists unchanged
+- Each state carries only its data — you can't have segments on a `Failed` job or progress on a `Completed` one
+- In a loop (polling an API), pass the updated job to the next iteration instead of mutating
+
 ## Patterns Worth Studying
 
 | Pattern | What it is | When to use it |
