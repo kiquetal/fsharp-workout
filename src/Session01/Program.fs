@@ -31,12 +31,12 @@ type Drink =
 
 
 type CustomizationType = EXTRA_SHOT | SYRUP of string | WHIPPED_CREAM
-
+type Quantity = int
 // --- Step 4: Order record ---
 type Order =
         { Drink: Drink
           Size: CupSize
-          Quantity: int
+          Quantity: Quantity
           Customizations: CustomizationType list 
          }
 // --- Step 5: Raw input & validation ---
@@ -125,9 +125,11 @@ let price (order: Order) : decimal =
             match order.Drink with
             | Latte _ | Cappuccino _ -> 0.50M // e.g., for extra shot or syrup
             | _ -> 0.00M
+        
+        
             
-        basePrice * sizeMultiplier * decimal order.Quantity
-     
+            
+        basePrice * sizeMultiplier * decimal order.Quantity 
         
 
 
