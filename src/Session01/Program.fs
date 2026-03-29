@@ -127,14 +127,15 @@ let price (order: Order) : decimal =
             | Large -> 1.5M
      
         let customizationCost =
-            match order.Drink with
-            | Latte _ | Cappuccino _ -> 0.50M // e.g., for extra shot or syrup
-            | _ -> 0.00M
+            order.Customizations |>     List.sumBy (function
+                | EXTRA_SHOT -> 0.50M
+                | WHIPPED_CREAM -> 0.25M
+                | SYRUP _ -> 0.30M)
         
-        
+      
             
             
-        basePrice * sizeMultiplier * decimal (SmartConstructors.quantityValue order.Quantity)
+        basePrice * sizeMultiplier * decimal (SmartConstructors.quantityValue order.Quantity) + customizationCost
 
 
 // --- Try it out ---
