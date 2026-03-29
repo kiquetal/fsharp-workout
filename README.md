@@ -98,6 +98,30 @@ Model a **coffee order system** using only types and pure functions:
 - Add a `Customization` type (extra shot, syrup flavor)
 - Make `price` handle customizations
 - Try making the `quantity` a constrained type (must be 1–10)
+- Add units of measure to pricing so the compiler catches dimensional mistakes
+
+### Units of Measure for Pricing
+
+F# can track physical/domain units through arithmetic at compile time — zero runtime cost.
+Apply this to the coffee pricing so you can't accidentally add a price to a quantity:
+
+```fsharp
+[<Measure>] type usd
+[<Measure>] type cup
+
+let basePrice = 3.50M<usd/cup>
+let qty = 2<cup>
+
+let total = basePrice * decimal qty   // decimal<usd> ✓ — compiler derives the unit
+let nonsense = basePrice + decimal qty // compile error — can't add usd/cup + cup
+```
+
+The rules follow dimensional analysis (same as physics):
+- **Addition/subtraction** — units must match (`usd + usd` ✓, `usd + cup` ✗)
+- **Multiplication** — units combine (`usd/cup × cup = usd`, numerator/denominator cancel)
+- **Division** — units divide (`usd / cup = usd/cup`)
+
+Units are erased at runtime — it's just `decimal` underneath. All checking happens at compile time.
 
 ### Domain Primitives & Smart Constructors
 
