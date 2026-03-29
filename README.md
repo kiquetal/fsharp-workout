@@ -91,6 +91,63 @@ dotnet build FSharpWorkout.sln
 dotnet run --project src/Session01
 ```
 
+## Learning: Where Does Validation Happen?
+
+Yes — `RawOrder` is your JSON, your HTTP request body, your CSV row, your user input.
+It's the messy outside world. You validate it **once** at the boundary, then work with clean types.
+
+```
+  ┌─────────────────────────────────────────────────────────┐
+  │                    OUTSIDE WORLD                         │
+  │         (JSON, HTTP request, user input, CSV)            │
+  │                                                          │
+  │   { "drink": "latte", "milk": "oat", "size": "large" }  │
+  └──────────────────────┬──────────────────────────────────┘
+                         │
+                         ▼
+  ┌──────────────────────────────────────────────────────────┐
+  │              VALIDATION BOUNDARY (parse here)             │
+  │                                                           │
+  │   RawOrder ──► parseDrink ──► Result<Drink, string>       │
+  │                                                           │
+  │   Strings go in, domain types or errors come out.         │
+  │   This is the ONLY place you validate.                    │
+  └──────────────────────┬──────────────────────────────────-─┘
+                         │
+                         ▼
+  ┌───────────────────────────────────────────────────────────┐
+  │                CLEAN DOMAIN (safe zone)                    │
+  │                                                            │
+  │   Drink, Milk, Order — types guarantee correctness.        │
+  │   No validation needed. If it compiles, it's valid.        │
+  └───────────────────────────────────────────────────────────┘
+```
+
+### Example
+
+```fsharp
+type Milk = Whole | Oat | Almond
+type Drink = Espresso | Latte of Milk
+
+type RawOrder = { DrinkName: string; MilkName: string }
+
+let parseDrink (raw: RawOrder) : Result<Drink, string> =
+    match raw.DrinkName with
+    | "espresso" -> Ok Espresso
+    | "latte" ->
+        match raw.MilkName with
+        | "whole" -> Ok (Latte Whole)
+        | "oat" -> Ok (Latte Oat)
+        | "almond" -> Ok (Latte Almond)
+        | m -> Error (sprintf "Unknown milk: %s" m)
+        //  ^ this is the milk string that didn't match
+    | d -> Error (sprintf "Unknown drink: %s" d)
+    //  ^ this is the drink string that didn't match
+```
+
+The `d` and `m` are just variable names that capture whatever string didn't match any case above.
+If someone sends `"mocha"`, then `d = "mocha"` and you return `Error "Unknown drink: mocha"`.
+
 ## Patterns Worth Studying
 
 | Pattern | What it is | When to use it |

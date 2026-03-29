@@ -19,18 +19,24 @@ module CoffeeOrder
  type CupSize = Small | Medium | Large
  
 // --- Step 2: Milk options ---
- type Milk = Option of NONE | OAT | ALMOND | WHOLE
+ type Milk =  OAT | ALMOND | WHOLE
  
 // --- Step 3: Drinks ---
 // Think: which drink MUST carry milk data?
-// type Drink = ...
-
+ type Drink =
+        | Espresso
+        | Americano
+        | Latte of Milk
+        | Cappuccino of Milk
+        
 // --- Step 4: Order record ---
-// type Order = ...
-
+ type Order =
+        { Drink: Drink
+          Size: CupSize
+          Quantity: int }
 // --- Step 5: Raw input & validation ---
 // This represents unvalidated input (e.g., from a user)
-// type RawOrder = { DrinkName: string; Size: string; Milk: string option; Quantity: int }
+ type RawOrder = { DrinkName: string; Size: string; Milk: string option; Quantity: int }
 // type OrderError = ...
 // let validate (raw: RawOrder) : Result<Order, OrderError> = ...
 
