@@ -129,6 +129,73 @@ let total = price order * decimal qty  // intentional, not accidental
 **When to wrap:** the value has a constraint (positive, non-empty, format) or a distinct domain meaning.
 **When not to wrap:** loop counters, intermediate calculations, local throwaway values.
 
+### Using the Unwrapper (`quantityValue`)
+
+When the DU constructor is `private`, external code can't pattern match on it directly.
+That's why the smart constructor module exposes an unwrapper — it's just a getter, no validation:
+
+```fsharp
+module SmartConstructors =
+    let create (n: int) : Result<Quantity, OrderError> =
+        if n > 0 then Ok (Quantity n)
+        else Error (InvalidQuantity n)
+
+    let quantityValue (Quantity n) = n  // destructure in the parameter — same as pattern matching
+```
+
+You call `create` once at the boundary. After that, `quantityValue` just extracts the `int` whenever you need it:
+
+```fsharp
+// at the boundary — validates
+let quantityResult = SmartConstructors.create raw.Quantity
+
+// inside the domain — just unwraps, no validation
+basePrice * sizeMultiplier * decimal (SmartConstructors.quantityValue order.Quantity) + customizationCost
+```
+
+The `(Quantity n)` syntax in the parameter is shorthand for pattern matching — since there's only one case, F# lets you destructure directly in the argument position. Same idea as `let fst (a, _) = a` for tuples.
+
+### Composing Orders: Order vs OrderItem
+
+As the domain grows, a single `Order` record does double duty — it's both "one line item" and "the whole order."
+Split them: rename the current `Order` to `OrderItem`, then compose into a real `Order`:
+
+```fsharp
+type OrderItem =
+    { Drink: Drink
+      Size: CupSize
+      Quantity: Quantity
+      Customizations: CustomizationType list }
+
+type OrderNumber = private OrderNumber of string
+
+module OrderNumber =
+    let create (s: string) : Result<OrderNumber, OrderError> =
+        if System.String.IsNullOrWhiteSpace(s) then Error (InvalidOrderNumber s)
+        else Ok (OrderNumber s)
+
+    let value (OrderNumber s) = s
+
+type Order =
+    { Number: OrderNumber
+      Items: OrderItem list }
+```
+
+Protect `Order` creation with a smart constructor to prevent empty orders:
+
+```fsharp
+module Order =
+    let create (number: OrderNumber) (items: OrderItem list) : Result<Order, OrderError> =
+        match items with
+        | [] -> Error EmptyOrder
+        | _ -> Ok { Number = number; Items = items }
+```
+
+`OrderNumber` uses `private` on the DU case — same pattern as `Quantity`.
+`Order` is a record, so you can't make its constructor `private` the same way.
+Instead, the protection bubbles up from the parts: if `OrderNumber` and `Quantity` are private,
+nobody can build a valid `Order` without going through the smart constructors.
+
 ### Review (10 min)
 - Commit your work
 - Note: which invalid states did the types prevent?
