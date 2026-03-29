@@ -431,3 +431,63 @@ Optional<Quantity> create(int n) {
 2. **No exceptions for expected failures** — use `Result`
 3. **Types before functions** — define the domain types first, then the transformations
 4. **Commit after each session** — track your progress
+
+## Learning: Result.sequence vs Validation (Collect All Errors)
+
+### The Problem
+
+When validating a list of items, you get back a `Result list`. You need to turn it into a `Result` of a list.
+This is the "traverse/sequence" pattern — and there are two strategies.
+
+### Strategy 1: Fail Fast (`Result.sequence`)
+
+Stop at the first error. Good when errors are fatal and there's no point continuing.
+
+```fsharp
+module Result =
+    let sequence (results: Result<'a, 'e> list) : Result<'a list, 'e> =
+        (Ok [], results)
+        ||> List.fold (fun acc cur ->
+            match acc, cur with
+            | Ok cs, Ok c -> Ok (c :: cs)
+            | Error e, _ -> Error e
+            | _, Error e -> Error e)
+        |> Result.map List.rev
+```
+
+Once `acc` is `Error`, the `| Error e, _ ->` branch keeps it there — all subsequent items are ignored.
+
+### Strategy 2: Collect All Errors (Validation)
+
+Gather every error so you can report them all at once. Good for user-facing validation (forms, API input).
+
+```fsharp
+let validateAll (results: Result<'a, 'e> list) : Result<'a list, 'e list> =
+    let oks, errs =
+        results |> List.fold (fun (oks, errs) cur ->
+            match cur with
+            | Ok v -> (v :: oks, errs)
+            | Error e -> (oks, e :: errs)) ([], [])
+    match errs with
+    | [] -> Ok (List.rev oks)
+    | _ -> Error (List.rev errs)
+```
+
+The accumulator is a tuple `(oks, errs)` — two lists growing independently. At the end, if `errs` is empty, return all successes; otherwise return all errors.
+
+### Trace through: `[Ok A; Error "x"; Error "y"]`
+
+| Step | oks | errs | cur |
+|------|-----|------|-----|
+| 0 | `[]` | `[]` | `Ok A` |
+| 1 | `[A]` | `[]` | `Error "x"` |
+| 2 | `[A]` | `["x"]` | `Error "y"` |
+
+Final: `errs = ["x"; "y"]` → `Error ["x"; "y"]`
+
+### When to use which
+
+| Strategy | Return type | Use when |
+|----------|------------|----------|
+| Fail fast | `Result<'a list, 'e>` | Errors are fatal, no point collecting more |
+| Collect all | `Result<'a list, 'e list>` | User-facing validation, show all problems at once |
