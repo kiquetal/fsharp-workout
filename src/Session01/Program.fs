@@ -31,7 +31,7 @@ type Drink =
 
 
 type CustomizationType = EXTRA_SHOT | SYRUP of string | WHIPPED_CREAM
-type Quantity = int
+type Quantity = private Quantity of int
 // --- Step 4: Order record ---
 type Order =
         { Drink: Drink
@@ -49,7 +49,14 @@ type OrderError =
     | InvalidMilk of string
     | InvalidQuantity of int
     | InvalidCustomization of string
-// type OrderError = ...
+
+module SmartConstructors =
+    let create (n: int) : Result<Quantity, OrderError> =
+        if n > 0 then Ok (Quantity n)
+        else Error (InvalidQuantity n)
+
+    let quantityValue (Quantity n) = n
+
 let parseMilk (milkStr: string option) : Result<Milk, OrderError> =
     match milkStr with
     | Some milstr -> 
@@ -78,10 +85,8 @@ let validate (raw: RawOrder) : Result<Order, OrderError> =
         | "medium" -> Ok Medium
         | "large" -> Ok Large
         | other -> Error (InvalidSize other)
-     let quantityResult =
-        if raw.Quantity > 0 then Ok raw.Quantity
-            else Error (InvalidQuantity raw.Quantity)
-        
+     let quantityResult = SmartConstructors.create raw.Quantity
+      
      let customizationResult =
          raw.Customizations |> List.map (function
              | "extra shot" -> Ok EXTRA_SHOT
@@ -129,8 +134,7 @@ let price (order: Order) : decimal =
         
             
             
-        basePrice * sizeMultiplier * decimal order.Quantity 
-        
+        basePrice * sizeMultiplier * decimal (SmartConstructors.quantityValue order.Quantity)
 
 
 // --- Try it out ---
