@@ -36,8 +36,9 @@ type Order =
           Quantity: int }
 // --- Step 5: Raw input & validation ---
 // This represents unvalidated input (e.g., from a user)
-type RawOrder = { DrinkName: string; Size: string; Milk: string option; Quantity: int }
-
+type InvalidCustomization = string
+type CustomizationType = EXTRA_SHOT | SYRUP of string | WHIPPED_CREAM
+type RawOrder = { DrinkName: string; Size: string; Milk: string option; Quantity: int ; Customizations: string list }
 type OrderError =
     | InvalidDrink of string
     | InvalidSize of string
@@ -83,12 +84,30 @@ let validate (raw: RawOrder) : Result<Order, OrderError> =
         if raw.Quantity > 0 then Ok raw.Quantity
             else Error (InvalidQuantity raw.Quantity)
         
+     let customizationResult =
+         raw.Customizations |> List.map (function
+             | "extra shot" -> Ok EXTRA_SHOT
+             | "whipped cream" -> Ok WHIPPED_CREAM
+             | s when s.StartsWith("syrup ") -> Ok (SYRUP (s.Substring(6)))
+             | other -> Error (InvalidCustomization other))
+         
+     let validateAllResult =
+         customizationResult |> List.fold( fun acc  cur ->
+                match acc, cur with
+                | Ok cs, Ok c -> Ok (c :: cs)
+                | Error e, _ -> Error e
+                | _, Error e -> Error e) (Ok [])
+         
      match result, sizeResult, quantityResult with
      | Ok drink, Ok size, Ok qty -> Ok { Drink = drink; Size = size; Quantity = qty }
      | Error e, _, _ -> Error e
      | _, Error e, _ -> Error e
      | _, _, Error e -> Error e
         
+ //suppose i want a customization
+
+
+
 // --- Step 6: Pricing ---
 let price (order: Order) : decimal =
         let basePrice =
@@ -103,6 +122,11 @@ let price (order: Order) : decimal =
             | Medium -> 1.2M
             | Large -> 1.5M
      
+        let customizationCost =
+            match order.Drink with
+            | Latte _ | Cappuccino _ -> 0.50M // e.g., for extra shot or syrup
+            | _ -> 0.00M
+            
         basePrice * sizeMultiplier * decimal order.Quantity
      
         
