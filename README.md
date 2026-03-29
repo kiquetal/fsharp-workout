@@ -20,6 +20,35 @@ A structured, hands-on F# training program designed for deep-focus sessions. Eac
 | 5 | **Async & Concurrency** | `task {}`, `and!`, cancellation, channels, `MailboxProcessor` | 90 min | ⬜ |
 | 6 | **Integration & Capstone** | JSON serialization, HTTP, CLI app — tie everything together | 90 min | ⬜ |
 
+## Part II — State Machines & Data Transformation
+
+After completing Part I (Sessions 1–6), Part II goes deep on modeling state, transforming data, and building real systems.
+
+| # | Session | What you build | Key concept |
+|---|---------|---------------|-------------|
+| 7 | **Explicit State Machines** | A deployment pipeline (Pending → Building → Testing → Deployed / Failed) | DUs as states, transition functions that only accept valid moves |
+| 8 | **Event Sourcing from Scratch** | An order lifecycle — rebuild current state by replaying events | Events as DUs, state = fold over event list |
+| 9 | **Parsing & Transformation** | A log file parser — raw text → structured records → summary report | Active patterns, `Result` chains, pipeline composition |
+| 10 | **Recursive Data Structures** | A file system tree or config hierarchy — traverse, transform, flatten | Trees as recursive DUs, catamorphisms (folds over trees) |
+| 11 | **Workflow Engine** | A multi-step approval process with branching and rollback | Combining state machines + event sourcing |
+| 12 | **Capstone: Infrastructure DSL** | A small DSL that describes infrastructure and validates it at compile time | Computation expressions, type-safe builders |
+
+### Progression
+
+- **Session 7** teaches the raw pattern — a state machine is just a function `State → Event → State`
+- **Session 8** shows that storing events gives you time travel for free (replay, audit, debugging)
+- **Sessions 9–10** build transformation muscles — taking messy data and shaping it
+- **Session 11** combines both skills into something real
+- **Session 12** ties it to systems engineering — building a tiny infrastructure DSL (think mini Pulumi/Terraform in F#)
+
+### Where Temporal fits in
+
+After building state machines by hand (Sessions 7–8), you'll understand what tools like [Temporal](https://temporal.io) abstract away:
+- **F# state machines** = the logic (which transitions are valid, compile-time safety)
+- **Temporal** = the runtime (durable execution, retries, surviving crashes across distributed services)
+
+They're complementary. Build it by hand first, then Temporal makes sense when you need distributed durability. Temporal has a .NET SDK, so you can use F# with it directly.
+
 ## Session Format
 
 Each 90-minute session follows this rhythm:
