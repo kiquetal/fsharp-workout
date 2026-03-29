@@ -381,6 +381,50 @@ let job4 = updateState job (Failed (ApiFailure "timeout"))
 | **Making Illegal States Unrepresentable** | Use DUs so invalid combinations can't be constructed. E.g., `Latte` carries `Milk` — you can't build a Latte without it. | Domain modeling, anywhere you'd otherwise write runtime checks |
 | **Parse, Don't Validate** | Convert raw untyped data (strings, ints) into rich domain types at the boundary. Once parsed, the types guarantee correctness. | Input handling, API boundaries, deserialization |
 
+## Applying F# Patterns in Java 21+
+
+Java 21+ has no built-in `Result` type. Three ways to get the same pattern:
+
+**1. Roll your own with sealed interfaces (no dependencies):**
+```java
+sealed interface Result<T, E> permits Ok, Err {}
+record Ok<T, E>(T value) implements Result<T, E> {}
+record Err<T, E>(E error) implements Result<T, E> {}
+
+// smart constructor
+static Result<Quantity, String> create(int n) {
+    return n > 0 ? new Ok<>(new Quantity(n)) : new Err<>("Invalid: " + n);
+}
+
+// caller must handle both — switch expression
+switch (create(rawQty)) {
+    case Ok(var qty) -> process(qty);
+    case Err(var e) -> log(e);
+}
+```
+
+**2. Vavr `Either<L, R>` (popular library):**
+```java
+Either<String, Quantity> create(int n) {
+    return n > 0 ? Either.right(new Quantity(n)) : Either.left("Invalid: " + n);
+}
+```
+
+**3. `Optional` (built-in, but no error details):**
+```java
+Optional<Quantity> create(int n) {
+    return n > 0 ? Optional.of(new Quantity(n)) : Optional.empty();
+}
+```
+
+| F# | Java 21+ equivalent |
+|---|---|
+| `Result<'T, 'E>` | sealed `Result<T, E>` or Vavr `Either` |
+| `Option<'T>` | `Optional<T>` |
+| Discriminated unions | `sealed interface` + `record` |
+| Smart constructor (`private` DU) | static factory + private class constructor |
+| Pattern matching | `switch` expressions with `case record(var x)` |
+
 ## Rules for Yourself
 
 1. **No mutable variables** — if you reach for `mutable`, rethink
