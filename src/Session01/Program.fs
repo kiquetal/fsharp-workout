@@ -29,7 +29,7 @@ type Drink =
         | Latte of Milk
         | Cappuccino of Milk
 
-type InvalidCustomization = string
+
 type CustomizationType = EXTRA_SHOT | SYRUP of string | WHIPPED_CREAM
 
 // --- Step 4: Order record ---
