@@ -112,7 +112,12 @@ let price (order: Order) : decimal =
 [<EntryPoint>]
 let main _ =
      let raw = { DrinkName = "latte"; Size = "medium"; Milk = Some "oat"; Quantity = 2 }
-     match validate raw with
-     | Ok order -> printfn "Order total: $%M" (price order)
-     | Error err -> printfn "Invalid order: %A" err
-     0
+     let badRaww = { DrinkName = "latte"; Size = "medium"; Milk = Some "oat"; Quantity = -1 }
+     let badCapuccinoOrder = { DrinkName = "cappuccino"; Size = "medium"; Milk = None; Quantity = 1 }
+     let allOrders = [raw; badRaww; badCapuccinoOrder]
+     let results = allOrders |> List.map validate
+     results |> List.iter (function
+        | Ok order -> printfn "Valid order: %A, Price: $%.2f" order (price order)
+        | Error e -> printfn "Invalid order: %A" e)
+     0 // return an integer exit code
+     
