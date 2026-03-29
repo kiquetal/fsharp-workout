@@ -70,6 +70,36 @@ Model a **coffee order system** using only types and pure functions:
 - Make `price` handle customizations
 - Try making the `quantity` a constrained type (must be 1–10)
 
+### Domain Primitives & Smart Constructors
+
+Wrap raw primitives in single-case DUs when they carry a domain constraint or distinct meaning.
+This prevents accidental misuse — the compiler won't let you mix up values that share the same underlying type.
+
+```fsharp
+// Without wrapper: Quantity is just int — compiler can't tell it apart from a price or age
+type Order = { Drink: Drink; Size: CupSize; Quantity: int }
+let total = price order + decimal order.Quantity  // compiles, but nonsense (money + count)
+
+// With wrapper: Quantity is its own type — compiler catches mistakes
+type Quantity = Quantity of int
+
+module Quantity =
+    let create (n: int) : Result<Quantity, OrderError> =
+        if n > 0 then Ok(Quantity n)
+        else Error(InvalidQuantity n)
+```
+
+The smart constructor (`Quantity.create`) is the only way to get a `Quantity` — it guarantees the value is always valid.
+To use the inner value, you unwrap it explicitly:
+
+```fsharp
+let (Quantity qty) = order.Quantity
+let total = price order * decimal qty  // intentional, not accidental
+```
+
+**When to wrap:** the value has a constraint (positive, non-empty, format) or a distinct domain meaning.
+**When not to wrap:** loop counters, intermediate calculations, local throwaway values.
+
 ### Review (10 min)
 - Commit your work
 - Note: which invalid states did the types prevent?
