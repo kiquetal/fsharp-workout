@@ -133,21 +133,30 @@ This prevents accidental misuse — the compiler won't let you mix up values tha
 type Order = { Drink: Drink; Size: CupSize; Quantity: int }
 let total = price order + decimal order.Quantity  // compiles, but nonsense (money + count)
 
-// With wrapper: Quantity is its own type — compiler catches mistakes
-type Quantity = Quantity of int
+// With wrapper + private: Quantity is its own type AND can only be created through validation
+type Quantity = private Quantity of int
 
 module Quantity =
     let create (n: int) : Result<Quantity, OrderError> =
         if n > 0 then Ok(Quantity n)
         else Error(InvalidQuantity n)
+
+    let value (Quantity n) = n  // the only way to read the inner int from outside
 ```
 
-The smart constructor (`Quantity.create`) is the only way to get a `Quantity` — it guarantees the value is always valid.
-To use the inner value, you unwrap it explicitly:
+The `private` on the DU case means code outside this module **cannot** construct `Quantity` directly or pattern-match on it.
+`Quantity.create` is the only way in — it guarantees the value is always valid.
+`Quantity.value` is the only way out — it unwraps the inner `int` for you:
 
 ```fsharp
-let (Quantity qty) = order.Quantity
-let total = price order * decimal qty  // intentional, not accidental
+// ✗ won't compile outside the defining module — constructor is private
+let q = Quantity 5
+
+// ✓ must go through the smart constructor
+let q = Quantity.create 5  // Result<Quantity, OrderError>
+
+// ✓ read the value through the exposed unwrapper
+let total = basePrice * decimal (Quantity.value order.Quantity)
 ```
 
 **When to wrap:** the value has a constraint (positive, non-empty, format) or a distinct domain meaning.
