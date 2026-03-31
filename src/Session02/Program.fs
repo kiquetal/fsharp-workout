@@ -89,17 +89,21 @@ module Result =
 
 module Validate =
     let email (s: string) : Result<Email, OrderError> =
-        // TODO: check it contains '@' and is non-empty
-        failwith "TODO"
-
+        if s.Contains("@") && s.Length > 0
+            then Ok (Email s)
+        else
+            Error (InvalidEmail s)
+        
     let cupSize (s: string) : Result<CupSize, OrderError> =
-        // TODO: parse "small", "medium", "large" (case-insensitive)
-        failwith "TODO"
-
+        match s.ToLower() with
+        | "small" -> Ok Small
+        | "medium" -> Ok Medium
+        | "large" -> Ok Large
+        | other -> Error (InvalidSize other)
     let quantity (n: int) : Result<Quantity, OrderError> =
-        // TODO: must be > 0
-        failwith "TODO"
-
+        if n > 0 then Ok (Quantity n)
+        else Error (InvalidQuantity n)
+    
     let drink (name: string) (milk: string option) : Result<Drink, OrderError> =
         // TODO: parse drink name, enforce milk rules
         // Espresso/Americano must NOT have milk
