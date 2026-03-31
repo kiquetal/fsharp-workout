@@ -66,7 +66,9 @@ module Result =
     // TODO: implement bind — chain two Result-returning functions
     // val bind : ('a -> Result<'b, 'e>) -> Result<'a, 'e> -> Result<'b, 'e>
     let bind (f: 'a -> Result<'b, 'e>) (result: Result<'a, 'e>) : Result<'b, 'e> =
-        failwith "TODO"
+          match result with
+            | Ok value -> f value
+            | Error err -> Error err
 
     // TODO: implement map2 — combine two Results with a function
     // val map2 : ('a -> 'b -> 'c) -> Result<'a, 'e> -> Result<'b, 'e> -> Result<'c, 'e>
