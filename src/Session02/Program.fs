@@ -131,11 +131,16 @@ module Validate =
 type ValidationError = ValidationError of OrderError list
 
 module Validation =
-    // TODO: implement map2 that accumulates errors in a list
     // val map2 : ('a -> 'b -> 'c) -> Result<'a, OrderError list> -> Result<'b, OrderError list> -> Result<'c, OrderError list>
     let map2 (f: 'a -> 'b -> 'c) (r1: Result<'a, OrderError list>) (r2: Result<'b, OrderError list>) : Result<'c, OrderError list> =
-        failwith "TODO"
 
+        match r1, r2 with
+        | Ok v1, Ok v2 -> Ok (f v1 v2)
+        | Error e1, Ok _ -> Error e1    
+        | Error e1, Error e2 -> Error (e1 @ e2)
+        | Ok _, Error e2 -> Error e2
+        
+        
     // TODO: lift a single-error Result into a list-error Result
     // val liftResult : Result<'a, OrderError> -> Result<'a, OrderError list>
     let liftResult (r: Result<'a, OrderError>) : Result<'a, OrderError list> =
