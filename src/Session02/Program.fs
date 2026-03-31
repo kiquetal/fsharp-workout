@@ -149,12 +149,20 @@ module Validation =
         | Error e -> Error [e]
         
         
-    // TODO: validate a full RawOrder, accumulating all errors
+
     // val validateOrder : RawOrder -> Result<Order, OrderError list>
     let validateOrder (raw: RawOrder) : Result<Order, OrderError list> =
         // Hint: use liftResult on each field validator,
         // then combine with map2 (or a custom applicative)
-        failwith "TODO"
+        let emailResult = liftResult (Validate.email raw.Email)
+        let drinkResult = liftResult (Validate.drink raw.DrinkName raw.Milk)
+        let sizeResult = liftResult (Validate.cupSize raw.Size)
+        let quantityResult = liftResult (Validate.quantity raw.Quantity)
+        
+        let validateOne = map2 (fun email drink -> (email,drink)) emailResult drinkResult
+        let validateTwo = map2 (fun (email,drink) size -> (email, drink, size)) validateOne sizeResult
+        let validateThree = map2 (fun (email, drink, size) quantity -> { Customer = email; Drink = drink; Size = size; Quantity = quantity }) validateTwo quantityResult
+        validateThree
 
 
 // --- Step 5: Discount engine with active patterns ---
