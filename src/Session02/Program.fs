@@ -141,11 +141,14 @@ module Validation =
         | Ok _, Error e2 -> Error e2
         
         
-    // TODO: lift a single-error Result into a list-error Result
+
     // val liftResult : Result<'a, OrderError> -> Result<'a, OrderError list>
     let liftResult (r: Result<'a, OrderError>) : Result<'a, OrderError list> =
-        failwith "TODO"
-
+        match r with
+        | Ok v -> Ok v
+        | Error e -> Error [e]
+        
+        
     // TODO: validate a full RawOrder, accumulating all errors
     // val validateOrder : RawOrder -> Result<Order, OrderError list>
     let validateOrder (raw: RawOrder) : Result<Order, OrderError list> =
