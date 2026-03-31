@@ -88,6 +88,56 @@ emailOpt.flatMap(email ->
 
 **Rule:** `flatMap` for all intermediate steps, `map` for the last one.
 
+## Result with `map`/`flatMap` Chaining (Railway-Oriented Programming)
+
+The sealed `Result` above only has `switch`. Add `map` and `flatMap` to get railway-style chaining — first error short-circuits the entire pipeline:
+
+```java
+public sealed interface Result<T, E> {
+    record Ok<T, E>(T value) implements Result<T, E> {}
+    record Err<T, E>(E error) implements Result<T, E> {}
+
+    default <U> Result<U, E> map(Function<T, U> f) {
+        return switch (this) {
+            case Ok<T, E> ok -> new Ok<>(f.apply(ok.value()));
+            case Err<T, E> err -> new Err<>(err.error());
+        };
+    }
+
+    default <U> Result<U, E> flatMap(Function<T, Result<U, E>> f) {
+        return switch (this) {
+            case Ok<T, E> ok -> f.apply(ok.value());
+            case Err<T, E> err -> new Err<>(err.error());
+        };
+    }
+}
+```
+
+**Short-circuit in action — first error wins:**
+
+```java
+// validate returns Result<Integer, String>
+// transform returns Result<Integer, String>
+
+new Ok<>(5)
+    .flatMap(x -> validate(x))    // Err("too small") — stops here
+    .flatMap(x -> transform(x))   // never runs
+    .map(x -> x * 2);             // never runs
+// result: Err("too small")
+```
+
+**Same railroad in F#:**
+
+```fsharp
+Ok 5
+|> Result.bind validate      // Error "too small" — stops here
+|> Result.bind transform      // never runs
+|> Result.map (fun x -> x * 2) // never runs
+// result: Error "too small"
+```
+
+**Rule:** `Err` flows through every `map`/`flatMap` untouched. Your functions only run on `Ok`.
+
 ## Sealed Interfaces as Discriminated Unions
 
 Java 21 sealed interfaces + records give you the same exhaustive matching as F# DUs:

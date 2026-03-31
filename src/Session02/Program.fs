@@ -115,6 +115,7 @@ module Validate =
     let drink (name: string) (milk: string option) : Result<Drink, OrderError> =
         match name with
         | "americano" -> Ok Americano
+        | "expresso" -> Ok Espresso
         | "latte" | "cappuccino" ->
             match milk with
             | Some m -> helperParserMilk m |> Result.map (fun mk ->
