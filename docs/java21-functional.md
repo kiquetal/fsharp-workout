@@ -138,6 +138,77 @@ Ok 5
 
 **Rule:** `Err` flows through every `map`/`flatMap` untouched. Your functions only run on `Ok`.
 
+## Applicative Validation: `map2` with Error Accumulation
+
+`flatMap` stops at the first error. `map2` checks both sides independently and collects ALL errors:
+
+```java
+// Add to your Result interface — errors are List<E> so they can accumulate
+static <A, B, C, E> Result<C, List<E>> map2(
+        BiFunction<A, B, C> f,
+        Result<A, List<E>> r1,
+        Result<B, List<E>> r2) {
+
+    // Java can't match two values at once like F#'s "match r1, r2 with"
+    // So we nest: outer switch checks r1, inner switch checks r2
+
+    return switch (r1) {
+        case Ok<A, List<E>> ok1 -> switch (r2) {
+            case Ok<B, List<E>> ok2 ->
+                new Ok<>(f.apply(ok1.value(), ok2.value()));  // both Ok → run f
+            case Err<B, List<E>> err2 ->
+                new Err<>(err2.error());                      // only r2 failed
+        };
+        case Err<A, List<E>> err1 -> switch (r2) {
+            case Ok<B, List<E>> ok2 ->
+                new Err<>(err1.error());                      // only r1 failed
+            case Err<B, List<E>> err2 -> {
+                // both failed → join the two error lists (F#'s e1 @ e2)
+                var combined = new ArrayList<>(err1.error()); // copy first list
+                combined.addAll(err2.error());                // add second list
+                yield new Err<>(List.copyOf(combined));       // immutable result
+            }
+        };
+    };
+}
+```
+
+**Smart constructors create the list — `map2` just merges them:**
+
+```java
+static Result<Email, List<String>> validateEmail(String s) {
+    return s.contains("@") ? new Ok<>(new Email(s)) : new Err<>(List.of("Invalid email: " + s));
+}
+
+static Result<Quantity, List<String>> validateQty(int n) {
+    return n > 0 ? new Ok<>(new Quantity(n)) : new Err<>(List.of("Invalid quantity: " + n));
+}
+```
+
+**Usage — both errors collected:**
+
+```java
+var result = Result.map2(
+    Order::new,                    // buildOrder — only runs if both Ok
+    validateEmail(""),             // Err(["Invalid email: "])
+    validateQty(-1)                // Err(["Invalid quantity: -1"])
+);
+// result: Err(["Invalid email: ", "Invalid quantity: -1"])
+```
+
+**Same thing in F#:**
+
+```fsharp
+Validation.map2 buildOrder
+    (validateEmail "")             // Error [InvalidEmail ""]
+    (validateQty -1)               // Error [InvalidQuantity -1]
+// result: Error [InvalidEmail ""; InvalidQuantity -1]
+```
+
+**`flatMap` vs `map2`:**
+- `flatMap` — fail fast, first error stops the chain
+- `map2` — accumulate, check everything, merge all errors
+
 ## Sealed Interfaces as Discriminated Unions
 
 Java 21 sealed interfaces + records give you the same exhaustive matching as F# DUs:
