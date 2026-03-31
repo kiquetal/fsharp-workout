@@ -79,7 +79,9 @@ module Result =
     // val apply : Result<('a -> 'b), 'e> -> Result<'a, 'e> -> Result<'b, 'e>
     let apply (fResult: Result<('a -> 'b), 'e>) (xResult: Result<'a, 'e>) : Result<'b, 'e> =
         match fResult, xResult with
-        | Ok f, Ok v -> map2 f 
+        | Ok f, Ok v -> Ok (f v)
+        | Error e, _ -> Error e
+        | _, Error e -> Error e
 
 
 // --- Step 3: Smart constructors & parsers ---
