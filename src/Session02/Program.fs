@@ -63,22 +63,23 @@ type RawOrder =
 // fallible operations without nested matches.
 
 module Result =
-    // TODO: implement bind — chain two Result-returning functions
     // val bind : ('a -> Result<'b, 'e>) -> Result<'a, 'e> -> Result<'b, 'e>
     let bind (f: 'a -> Result<'b, 'e>) (result: Result<'a, 'e>) : Result<'b, 'e> =
           match result with
             | Ok value -> f value
             | Error err -> Error err
 
-    // TODO: implement map2 — combine two Results with a function
     // val map2 : ('a -> 'b -> 'c) -> Result<'a, 'e> -> Result<'b, 'e> -> Result<'c, 'e>
     let map2 (f: 'a -> 'b -> 'c) (r1: Result<'a, 'e>) (r2: Result<'b, 'e>) : Result<'c, 'e> =
-        failwith "TODO"
+        match r1, r2 with
+        | Ok v1, Ok v2 -> Ok (f v1 v2)
+        | Error e, _ -> Error e
+        | _, Error e -> Error e
 
-    // TODO: implement apply — applicative style for Results
     // val apply : Result<('a -> 'b), 'e> -> Result<'a, 'e> -> Result<'b, 'e>
     let apply (fResult: Result<('a -> 'b), 'e>) (xResult: Result<'a, 'e>) : Result<'b, 'e> =
-        failwith "TODO"
+        match fResult, xResult with
+        | Ok f, Ok v -> map2 f 
 
 
 // --- Step 3: Smart constructors & parsers ---
