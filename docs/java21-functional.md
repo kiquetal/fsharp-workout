@@ -166,6 +166,9 @@ static <A, B, C, E> Result<C, List<E>> map2(
                 // both failed → join the two error lists (F#'s e1 @ e2)
                 var combined = new ArrayList<>(err1.error()); // copy first list
                 combined.addAll(err2.error());                // add second list
+                // yield: when a switch branch needs multiple statements (a block),
+                // you can't use -> to return a value. yield says "this is the value
+                // this block produces" — like return, but for switch expressions.
                 yield new Err<>(List.copyOf(combined));       // immutable result
             }
         };
