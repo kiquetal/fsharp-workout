@@ -47,6 +47,7 @@ type OrderError =
     | MilkRequired of string
     | MilkNotAllowed of string
     | InvalidQuantity of int
+    | InvalidMilk of string
 
 // Raw unvalidated input
 type RawOrder =
@@ -93,6 +94,13 @@ module Validate =
             then Ok (Email s)
         else
             Error (InvalidEmail s)
+
+    let helperParserMilk (milk: string ) : Result<Milk, OrderError> =
+      match milk.ToLower() with
+        | "oat" -> Ok Oat
+        | "almond" -> Ok Almond
+        | "whole" -> Ok Whole
+        | other -> Error (InvalidMilk other)
         
     let cupSize (s: string) : Result<CupSize, OrderError> =
         match s.ToLower() with
@@ -105,11 +113,13 @@ module Validate =
         else Error (InvalidQuantity n)
     
     let drink (name: string) (milk: string option) : Result<Drink, OrderError> =
-        // TODO: parse drink name, enforce milk rules
-        // Espresso/Americano must NOT have milk
-        // Latte/Cappuccino MUST have milk
-        // Hint: you'll need a helper to parse the milk string
-        failwith "TODO"
+        match name with
+        | "americano" -> Ok Americano
+        | "latte" | "cappuccino" ->
+            match milk with
+            | Some m -> helperParserMilk m |> Result.map (fun mk ->
+                if name = "latte" then Latte mk else Cappuccino mk)
+            | None -> Error (MilkRequired name)
 
 
 // --- Step 4: Error accumulation ---
