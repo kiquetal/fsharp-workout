@@ -188,7 +188,6 @@ type Discount =
     | FlatOff of decimal
 
 let calculateDiscount (order: Order) : Discount =
-    // TODO: use the active patterns above
     // Large + Bulk -> 15% off
     // Bulk alone -> 10% off
     // Large alone -> 5% off
@@ -226,10 +225,10 @@ module Pricing =
         | FlatOff amount -> max 0.0m (price - amount)
 
     let finalPrice (order: Order) : decimal =
-        // TODO: compose basePrice and applyDiscount using
         // calculateDiscount and the pipe operator
-        failwith "TODO"
-
+        let discount = calculateDiscount order
+        let price = basePrice order
+        applyDiscount price discount
 
 // --- Step 7: Process a batch of orders ---
 // Given a list of RawOrders, validate all of them,
@@ -241,8 +240,11 @@ type BatchResult = { Processed: ProcessedOrder list; Errors: (RawOrder * OrderEr
 let processBatch (rawOrders: RawOrder list) : BatchResult =
     // TODO: validate each, partition results, price valid orders
     // Hint: List.map, List.choose or List.partition, then build BatchResult
-    failwith "TODO"
-
+    rawOrders |> List.map (fun ro -> (ro, Validation.validateOrder ro))
+    |> List.partition (fun (ro, rs)-> match rs with
+        | Ok _ -> true
+        | Error _ -> false)
+    
 
 // --- Try it out ---
 [<EntryPoint>]
