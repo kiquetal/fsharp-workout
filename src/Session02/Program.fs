@@ -240,11 +240,11 @@ type BatchResult = { Processed: ProcessedOrder list; Errors: (RawOrder * OrderEr
 let processBatch (rawOrders: RawOrder list) : BatchResult =
     // TODO: validate each, partition results, price valid orders
     // Hint: List.map, List.choose or List.partition, then build BatchResult
-    rawOrders |> List.map (fun ro -> (ro, Validation.validateOrder ro))
-    |> List.partition (fun (ro, rs)-> match rs with
-        | Ok _ -> true
-        | Error _ -> false)
-    
+   let partitionAll = rawOrders |> List.map (fun ro -> (ro, Validation.validateOrder ro))
+                                |> List.partition (fun (_, rs)-> Result.isOk rs)
+                
+   let (successes, failures) = partitionAll
+   
 
 // --- Try it out ---
 [<EntryPoint>]
