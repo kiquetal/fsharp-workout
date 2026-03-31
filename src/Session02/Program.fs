@@ -121,6 +121,7 @@ module Validate =
             | Some m -> helperParserMilk m |> Result.map (fun mk ->
                 if name = "latte" then Latte mk else Cappuccino mk)
             | None -> Error (MilkRequired name)
+        | other -> Error (InvalidDrink other)
 
 
 // --- Step 4: Error accumulation ---
