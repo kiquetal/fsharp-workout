@@ -169,15 +169,18 @@ module Validation =
 // Active patterns let you create custom "matchers"
 // that decompose data in readable ways.
 
-// TODO: define an active pattern that classifies order size
 // (|SmallOrder|MediumOrder|LargeOrder|)
 let (|SmallOrder|MediumOrder|LargeOrder|) (order: Order) =
-    failwith "TODO"
+    match order.Size with
+    | Small -> SmallOrder
+    | Medium -> MediumOrder
+    | Large -> LargeOrder
 
-// TODO: define a partial active pattern for bulk orders (qty >= 5)
+
 // (|BulkOrder|_|)
 let (|BulkOrder|_|) (order: Order) =
-    failwith "TODO"
+    let (Quantity qty) = order.Quantity
+    if qty >= 5 then Some BulkOrder else None
 
 type Discount =
     | NoDiscount
