@@ -115,6 +115,24 @@ Same logic, but the active pattern version hides the "how" (field access, thresh
 - You can combine total + partial patterns with `&` (AND) for compound rules
 - Active patterns are just functions — they compose, they're testable
 
+### Parameterized active patterns
+
+Active patterns can take extra arguments. The last parameter is always the matched value (passed by `match` automatically). Everything before it is yours:
+
+```fsharp
+let (|GreaterThan|_|) threshold n =
+//                    ^^^^^^^^^  ^
+//                    you pass   match passes automatically
+    if n > threshold then Some n else None
+
+match quantity with
+| GreaterThan 10 -> "bulk"       // threshold=10, n=quantity
+| GreaterThan 5  -> "medium"     // threshold=5,  n=quantity
+| _ -> "small"
+```
+
+This makes active patterns reusable — same pattern, different thresholds.
+
 ### `&` (AND) pattern
 
 `&` means "match both patterns on the same value":
