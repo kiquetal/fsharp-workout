@@ -193,7 +193,11 @@ let calculateDiscount (order: Order) : Discount =
     // Bulk alone -> 10% off
     // Large alone -> 5% off
     // otherwise -> no discount
-    failwith "TODO"
+    match order with
+    | LargeOrder & BulkOrder -> Percentage 15.0m
+    | BulkOrder -> Percentage 10.0m
+    | LargeOrder -> Percentage 5.0m
+    | _ -> NoDiscount
 
 
 // --- Step 6: Full pipeline ---
