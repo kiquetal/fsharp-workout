@@ -471,6 +471,107 @@ Optional<Quantity> create(int n) {
 | Smart constructor (`private` DU) | static factory + private class constructor |
 | Pattern matching | `switch` expressions with `case record(var x)` |
 
+### Functional Chaining in Java 21+: `map` vs `flatMap`
+
+**One sentence to remember:** `map` wraps for you, `flatMap` trusts that your function already did.
+
+```java
+// map: transform the value inside the container
+Optional.of("hello").map(s -> s.length());          // Optional<Integer>
+
+// flatMap: your function already returns a container — don't double-wrap
+Optional.of("hello").flatMap(s -> Optional.of(s.length())); // Optional<Integer>
+
+// what happens if you use map when the function returns Optional?
+Optional.of("hello").map(s -> Optional.of(s.length()));     // Optional<Optional<Integer>> — broken
+```
+
+| F# | Java | Does what |
+|---|---|---|
+| `Result.map` | `.map()` | Transforms inner value, re-wraps |
+| `Result.bind` | `.flatMap()` | Function already wraps, no double-wrapping |
+| `Result.map2` | nested `flatMap`/`map` | Combines two containers |
+
+### Combining Multiple `Optional` Values
+
+F# `map2` has no Java equivalent — you nest `flatMap` calls, using `map` for the last step:
+
+```java
+// F# version — flat, clean
+Result.map2 (fun email size -> new Order(email, size)) emailResult sizeResult
+
+// Java equivalent — nested, but same logic
+emailOpt.flatMap(email ->           // unwrap email, don't re-wrap (inner returns Optional)
+    sizeOpt.map(size ->             // unwrap size, DO re-wrap (inner returns plain value)
+        new Order(email, size)));   // plain value — map wraps it
+```
+
+With three fields:
+
+```java
+emailOpt.flatMap(email ->
+    sizeOpt.flatMap(size ->         // flatMap: intermediate step, more chaining ahead
+        qtyOpt.map(qty ->          // map: last step, just build the value
+            new Order(email, size, qty))));
+```
+
+**Rule:** `flatMap` for all intermediate steps, `map` for the last one.
+
+### Sealed Interfaces as Discriminated Unions
+
+Java 21 sealed interfaces + records give you the same exhaustive matching as F# DUs:
+
+```java
+// F#:  type Shape = Circle of float | Rectangle of float * float
+sealed interface Shape permits Circle, Rectangle {}
+record Circle(double radius) implements Shape {}
+record Rectangle(double w, double h) implements Shape {}
+
+// F#:  match shape with | Circle r -> ... | Rectangle (w, h) -> ...
+double area(Shape shape) {
+    return switch (shape) {
+        case Circle(var r) -> Math.PI * r * r;
+        case Rectangle(var w, var h) -> w * h;
+        // no default needed — compiler knows all cases
+    };
+}
+```
+
+### Smart Constructors in Java
+
+Same pattern as F# `private` DU — hide the constructor, expose a factory:
+
+```java
+// F#:  type Email = private Email of string
+//      module Email = let create s = if valid then Ok (Email s) else Error ...
+public record Email(String value) {
+    // compact constructor — validates on creation
+    public Email {
+        if (value == null || !value.contains("@"))
+            throw new IllegalArgumentException("Invalid email: " + value);
+    }
+
+    // or: factory method returning Optional (no exceptions)
+    public static Optional<Email> create(String s) {
+        return (s != null && s.contains("@"))
+            ? Optional.of(new Email(s))
+            : Optional.empty();
+    }
+}
+```
+
+### Pipelines with `Stream`
+
+F# `|>` pipelines translate to Java `Stream` chains:
+
+```java
+// F#:  orders |> List.filter isValid |> List.map price |> List.sum
+var total = orders.stream()
+    .filter(Order::isValid)
+    .map(Order::price)
+    .reduce(BigDecimal.ZERO, BigDecimal::add);
+```
+
 ## Rules for Yourself
 
 1. **No mutable variables** — if you reach for `mutable`, rethink
