@@ -52,8 +52,20 @@ let deep = Operation(Subtract, Operation(Divide, Number 10.0, Number 2.0), Opera
 //
 // Hint: you already know Result.bind from Session 2
 
-// TODO: let rec evaluate (expr: Expr) = ...
-
+let rec evaluate expr : Result<float,string> =
+    match expr with
+    | Number n -> Ok n
+    | Operation (op, left, right) ->  evaluate left |> Result.bind ( fun l ->
+             evaluate right |> Result.bind ( fun  r ->
+                match op with
+                | Add -> Ok (l + r)
+                | Subtract -> Ok (l - r)
+                | Multiply -> Ok (l * r)
+                | Divide -> if r = 0.0 then Error "Division by zero" else Ok (l / r)
+             )
+             
+       )
+    
 
 // --- Step 4: Pretty-print ---
 // val format : Expr -> string
