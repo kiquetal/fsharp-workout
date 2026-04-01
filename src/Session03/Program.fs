@@ -96,7 +96,21 @@ let rec format (expr: Expr) : string =
 // This transforms the tree, not evaluates it.
 // Hint: match on the Operation AND the children together
 
-// TODO: let rec simplify (expr: Expr) = ...
+ let rec simplify (expr: Expr) : Expr =
+    match expr with
+     | Number e -> Number e
+     | Operation (op, left, right) ->
+       let leftSimp = simplify left
+       let rightSimp = simplify right
+       match (op, leftSimp, rightSimp) with
+        | (Add, _, Number 0.0) -> leftSimp
+        | (Add, Number 0.0, _) -> rightSimp
+        | (Multiply, _, Number 1.0) -> leftSimp
+        | (Multiply, Number 1.0, _) -> rightSimp
+        | (Multiply, _, Number 0.0) -> Number 0.0
+        | (Multiply, Number 0.0, _) -> Number 0.0
+        | _ -> Operation (op, leftSimp, rightSimp)
+        
 
 
 // --- Step 6: Fold (stretch) ---
