@@ -79,12 +79,13 @@ let rec format (expr: Expr) : string =
     match expr with
     | Number n -> n.ToString()
     | Operation(operator, expr, expr1) ->
-        let optStr = match operator with
+      let optStr =
+                        match operator with
                         | Add -> " + "
                         | Subtract -> " - "
                         | Multiply -> " * "
                         | Divide -> " / "
-        "(" + format expr + optStr + format expr1 + ")"
+      "(" + format expr + optStr + format expr1 + ")"
 
 // --- Step 5: Simplify ---
 // val simplify : Expr -> Expr
@@ -96,21 +97,21 @@ let rec format (expr: Expr) : string =
 // This transforms the tree, not evaluates it.
 // Hint: match on the Operation AND the children together
 
- let rec simplify (expr: Expr) : Expr =
+let rec simplify (expr: Expr) : Expr =
     match expr with
-     | Number e -> Number e
-     | Operation (op, left, right) ->
-       let leftSimp = simplify left
-       let rightSimp = simplify right
-       match (op, leftSimp, rightSimp) with
-        | (Add, _, Number 0.0) -> leftSimp
-        | (Add, Number 0.0, _) -> rightSimp
-        | (Multiply, _, Number 1.0) -> leftSimp
-        | (Multiply, Number 1.0, _) -> rightSimp
-        | (Multiply, _, Number 0.0) -> Number 0.0
-        | (Multiply, Number 0.0, _) -> Number 0.0
-        | _ -> Operation (op, leftSimp, rightSimp)
-        
+    | Number e -> Number e
+    | Operation (op, left, right) ->
+      let leftSimp = simplify left
+      let rightSimp = simplify right
+      match (op, leftSimp, rightSimp) with
+      | (Add, _, Number 0.0) -> leftSimp
+      | (Add, Number 0.0, _) -> rightSimp
+      | (Multiply, _, Number 1.0) -> leftSimp
+      | (Multiply, Number 1.0, _) -> rightSimp
+      | (Multiply, _, Number 0.0) -> Number 0.0
+      | (Multiply, Number 0.0, _) -> Number 0.0
+      | _ -> Operation (op, leftSimp, rightSimp)
+            
 
 
 // --- Step 6: Fold (stretch) ---
