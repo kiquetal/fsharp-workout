@@ -144,6 +144,38 @@ Decompose: `| Operation(op, left, right) -> ...`
 | Structural recursion | Follow the shape of the data | One match branch per DU case |
 | Catamorphism (fold) | Generic recursion pattern | Replace constructors with functions |
 
+## Understanding Fold — A Tree Walker
+
+`fold` is just the recursion skeleton extracted into a reusable function. You pass in two handlers:
+
+```fsharp
+let rec fold handleNumber handleOperation expr = ...
+```
+
+- `handleNumber` — "what do I do when I hit a `Number`?"
+- `handleOperation` — "what do I do when I have an operator and two already-processed children?"
+
+### Trace: formatting `(2 + 3)`
+
+```
+fold handleNumber handleOperation (Operation(Add, Number 2.0, Number 3.0))
+
+1. Matches Operation → recurse on children
+2. fold ... (Number 2.0) → matches Number → handleNumber 2.0 → "2"
+3. fold ... (Number 3.0) → matches Number → handleNumber 3.0 → "3"
+4. handleOperation Add "2" "3" → "(2 + 3)"
+```
+
+### What changes between use cases is only the two handlers
+
+| Use case | handleNumber | handleOperation |
+|----------|-------------|-----------------|
+| format | `fun n -> n.ToString()` | `fun op l r -> "(" + l + symbol + r + ")"` |
+| evaluate | `fun n -> Ok n` | `fun op l r -> (* bind + math *)` |
+| simplify | `fun n -> Number n` | `fun op l r -> (* check rules, return Expr *)` |
+
+The recursion is always the same. Only the "what to do" changes.
+
 ## Review (10 min)
 - Draw the tree for `(1 + 2) * (3 - 4)` on paper
 - Trace `evaluate` through it step by step
