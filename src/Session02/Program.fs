@@ -244,6 +244,17 @@ let processBatch (rawOrders: RawOrder list) : BatchResult =
                                 |> List.partition (fun (_, rs)-> Result.isOk rs)
                 
    let (successes, failures) = partitionAll
+   let processedOrders =
+       successes |> List.map (fun (_, rs) -> 
+           match rs with
+           | Ok order -> { Order = order; Price = Pricing.finalPrice order }
+           | Error _ -> failwith "This should never happen since we partitioned by success")
+
+   let errors = failures |> List.map (fun (ro, rs) ->
+       match rs with
+       | Ok _ -> failwith "This should never happen since we partitioned by failure"
+       | Error errs -> (ro, errs))
+   { Processed = processedOrders; Errors = errors }
    
 
 // --- Try it out ---
