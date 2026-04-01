@@ -111,6 +111,20 @@ fold : (float -> 'a) -> (Operator -> 'a -> 'a -> 'a) -> Expr -> 'a
 
 Then rewrite `evaluate` and `format` using `fold`.
 
+## Gotchas & Insights
+
+### The `*` syntax in DU cases is not a tuple
+
+When you see `*` in a DU case, it means "this case carries multiple pieces of data." It's just F#'s syntax for "and."
+
+```fsharp
+| Latte of Milk                         // 1 value
+| Operation of Operator * Expr * Expr   // 3 values
+```
+
+Construct: `Operation(Add, Number 2.0, Number 3.0)`
+Decompose: `| Operation(op, left, right) -> ...`
+
 ## Key Concepts
 
 | Concept | What it means | Where you'll see it |

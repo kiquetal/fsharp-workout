@@ -183,32 +183,3 @@ Final: `errs = ["x"; "y"]` → `Error ["x"; "y"]`
 | Fail fast | `Result<'a list, 'e>` | Errors are fatal, no point collecting more |
 | Collect all | `Result<'a list, 'e list>` | User-facing validation, show all problems at once |
 
-## DU Case Data — The `*` Syntax Is Not a Tuple
-
-When you see `*` in a discriminated union case, it means "this case carries multiple pieces of data." It's not a tuple — it's just F#'s syntax for "and."
-
-```fsharp
-// One piece of data
-| Latte of Milk
-
-// Three pieces of data
-| Operation of Operator * Expr * Expr
-```
-
-Construct by passing all values:
-
-```fsharp
-Operation(Add, Number 2.0, Number 3.0)
-//        ^^^  ^^^^^^^^^^  ^^^^^^^^^^
-//        op   left expr   right expr
-```
-
-Decompose by pattern matching:
-
-```fsharp
-match expr with
-| Number n -> ...                      // pull out 1 value
-| Operation(op, left, right) -> ...    // pull out 3 values
-```
-
-The `*` is just how F# says "and" in DU definitions. Think: "an Operator *and* an Expr *and* an Expr."
