@@ -75,8 +75,16 @@ let rec evaluate expr : Result<float,string> =
 //
 // Same recursive shape as evaluate
 
-// TODO: let rec format (expr: Expr) = ...
-
+let rec format (expr: Expr) : string =
+    match expr with
+    | Number n -> n.ToString()
+    | Operation(operator, expr, expr1) ->
+        let optStr = match operator with
+                        | Add -> " + "
+                        | Subtract -> " - "
+                        | Multiply -> " * "
+                        | Divide -> " / "
+        "(" + format expr + optStr + format expr1 + ")"
 
 // --- Step 5: Simplify ---
 // val simplify : Expr -> Expr
