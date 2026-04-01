@@ -113,6 +113,15 @@ Then rewrite `evaluate` and `format` using `fold`.
 
 ## Gotchas & Insights
 
+### `Result.bind` is Java's `flatMap`
+
+| F# | Java | When to use |
+|-----|------|------------|
+| `Result.map` | `.map()` | Next step can't fail — returns a plain value |
+| `Result.bind` | `.flatMap()` | Next step can fail — returns a `Result` |
+
+`bind` = "map then flatten." Same concept, different naming tradition.
+
 ### The `*` syntax in DU cases is not a tuple
 
 When you see `*` in a DU case, it means "this case carries multiple pieces of data." It's just F#'s syntax for "and."
