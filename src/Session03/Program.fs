@@ -40,11 +40,9 @@ type Expr =
 //
 // If you can build them, you understand the type.
 
-// TODO: let simple = ...
-// TODO: let nested = ...
-// TODO: let deep = ...
-
-
+let simple = Operation (Add, Number 2.0, Number 3.0)
+let nested = Operation(Multiply , simple, Number 4.0)
+let deep = Operation(Subtract, Operation(Divide, Number 10.0, Number 2.0), Operation(Add, Number 1.0, Number 2.0))
 // --- Step 3: Evaluate ---
 // val evaluate : Expr -> Result<float, string>
 //
