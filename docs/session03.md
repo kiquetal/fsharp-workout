@@ -176,6 +176,59 @@ fold handleNumber handleOperation (Operation(Add, Number 2.0, Number 3.0))
 
 The recursion is always the same. Only the "what to do" changes.
 
+## Extra Fold Exercises
+
+### HTML Tree
+
+```fsharp
+type Html =
+    | Text of string
+    | Element of tag: string * children: Html list
+
+let doc = Element("div", [
+    Element("p", [Text "hello"])
+    Element("p", [Text "world"])
+])
+
+let rec foldHtml handleText handleElement html =
+    match html with
+    | Text s -> handleText s
+    | Element (tag, children) ->
+        let results = List.map (fun c -> foldHtml handleText handleElement c) children
+        handleElement tag results
+
+// count text nodes
+let countTexts = foldHtml (fun t -> 1) (fun tag ch -> List.sum ch)
+```
+
+### Org Chart
+
+```fsharp
+type Employee =
+    | Individual of name: string * salary: int
+    | Manager of name: string * salary: int * reports: Employee list
+
+let org =
+    Manager("Alice", 100000, [
+        Manager("Bob", 80000, [
+            Individual("Carol", 50000)
+            Individual("Dave", 50000)
+        ])
+        Individual("Eve", 60000)
+    ])
+```
+
+TODO: write `foldOrg` and use it to calculate total salary.
+
+### The pattern
+
+Every fold follows the same recipe:
+1. Match on the type
+2. Leaf → call the leaf handler
+3. Branch → fold each child first (`List.map` if many, direct call if two), then call the branch handler with the results
+
+The handlers never recurse. `fold` does that. The handlers just combine.
+
 ## Review (10 min)
 - Draw the tree for `(1 + 2) * (3 - 4)` on paper
 - Trace `evaluate` through it step by step
