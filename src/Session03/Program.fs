@@ -120,8 +120,9 @@ let rec simplify (expr: Expr) : Expr =
 //
 // val fold : (float -> 'a) -> (Operator -> 'a -> 'a -> 'a) -> Expr -> 'a
 
-// TODO: let rec fold fNumber fOp expr = ...
 
+let rec fold fnumber fOp expr =
+    
 
 // --- Try it out ---
 [<EntryPoint>]
