@@ -81,6 +81,84 @@ match redeye with
 
 In a `match`, F# always passes the matched value as the **last argument**. You never write it — it's implicit. Everything else you provide explicitly in the pattern.
 
+## Why Parameterized Active Patterns Are Confusing
+
+With complete patterns, everything is visible — one parameter, it's obviously the thing you're matching:
+
+```fsharp
+let (|LargeOrder|SmallOrder|) (order: Order) =
+//                              ^^^^^
+//                              one param, clearly the order
+    match order.Size with
+    | Large -> LargeOrder
+    | _     -> SmallOrder
+
+match order with
+| LargeOrder -> ...   // obvious: order goes in
+```
+
+With parameterized patterns, the match value becomes **invisible**:
+
+```fsharp
+let (|PricedOver|_|) (threshold: decimal) (coffee: Coffee) =
+//                    ^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^
+//                    you pass this        match passes this (ALWAYS last)
+    if coffee.Price > threshold then Some coffee.Price else None
+
+match coffee with
+| PricedOver 6.00m price -> ...
+//           ^^^^^  ^^^^^
+//           threshold    NOT coffee — this is destructuring the Some
+```
+
+There's no syntax that tells you which parameter is the match target. You have to look at the function definition and remember: **last parameter = match target**.
+
+### The value after the pattern is destructuring, not input
+
+This is the hardest part. In `| PricedOver 6.00m price ->`, `price` is **not** the coffee being passed in. It's the binding of what `Some` returned — just like normal `Option` destructuring:
+
+```fsharp
+// Normal Option destructuring:
+match Some 7.50m with
+| Some price -> price       // price = 7.50m
+
+// Active pattern — same thing, Some is hidden:
+match coffee with
+| PricedOver 6.00m price -> price   // price = 7.50m (from Some 7.50m)
+```
+
+You can ignore the value if you don't need it — all three are equivalent:
+
+```fsharp
+| PricedOver 6.00m price -> ...   // bind it, use it
+| PricedOver 6.00m _     -> ...   // explicitly ignore it
+| PricedOver 6.00m       -> ...   // implicitly ignore it (shorter)
+```
+
+### Type annotations are your friend
+
+When confused, add types to the active pattern definition:
+
+```fsharp
+let (|PricedOver|_|) (threshold: decimal) (coffee: Coffee) : decimal option =
+//                    ^^^^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^^   ^^^^^^^^^^^^^^
+//                    you pass this        match passes this  what you destructure
+```
+
+Read it as: "give me a threshold and a coffee, I'll maybe give you back a decimal."
+
+### How to read a parameterized pattern in match
+
+```fsharp
+match coffee with
+| PricedOver 6.00m price -> sprintf "Premium ($%M)" price
+```
+
+Read it as:
+1. F# calls `(|PricedOver|_|) 6.00m coffee` — you gave `6.00m`, match gave `coffee`
+2. If it returns `Some x` → match succeeds, `price` binds to `x`
+3. If it returns `None` → skip to next case
+
 ## Teaching Checklist
 
 When explaining a new F# concept, always cover these aspects — don't skip any:
