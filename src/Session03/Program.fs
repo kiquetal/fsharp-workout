@@ -122,12 +122,53 @@ let rec simplify (expr: Expr) : Expr =
 
 
 let rec fold fnumber fOp expr =
+    match expr with
+    | Number n -> fnumber n
+    | Operation (op, left, right) ->
+        let leftfold = fold fnumber fOp left
+        let rightfold = fold fnumber fOp right
+        fOp op leftfold rightfold
     
+// --- Fold exercises ---
+// Use your fold function to solve these. Each is a single fold call with two lambdas.
+// No recursion needed — fold does it for you.
+
+// Exercise 1: Count all nodes (Numbers + Operations) in the tree.
+// (2 + 3) * 4 → 5 nodes (three Numbers, two Operations)
+// Hint: 'a is int
+
+let countNodes = fold (fun n -> 1)(fun op l r -> 1 + l + r)
+
+// Exercise 2: Find the maximum number in the tree.
+// (10 / 2) - (1 + 2) → 10.0
+// Hint: 'a is float. The operation handler ignores the operator.
+
+let maxNumber = fold (fun n -> n) (fun _ l r -> max l r)
+
+
+// Exercise 3: Collect all numbers into a list.
+// (2 + 3) * 4 → [2.0; 3.0; 4.0]
+// Hint: 'a is float list. Number handler makes a one-element list. Operation handler combines two lists.
+
+let collectNumbers = fold (fun n -> [n])(fun _ l r -> l @ r)
+
 
 // --- Try it out ---
 [<EntryPoint>]
 let main _ =
-    // TODO: build expressions, evaluate, format, simplify
-    // printfn "Expression: %s" (format nested)
-    // printfn "Result: %A" (evaluate nested)
+    printfn "=== Evaluate & Format ==="
+    printfn "  simple:  %s = %A" (format simple) (evaluate simple)
+    printfn "  nested:  %s = %A" (format nested) (evaluate nested)
+    printfn "  deep:    %s = %A" (format deep) (evaluate deep)
+
+    printfn "\n=== Simplify ==="
+    let withZeros = Operation(Multiply, Operation(Add, Number 5.0, Number 0.0), Number 1.0)
+    printfn "  before: %s" (format withZeros)
+    printfn "  after:  %s" (format (simplify withZeros))
+
+    printfn "\n=== Fold Exercises ==="
+    printfn "  countNodes nested: %d" (countNodes nested)
+    // printfn "  maxNumber deep: %f" (maxNumber deep)
+    // printfn "  collectNumbers nested: %A" (collectNumbers nested)
+
     0
