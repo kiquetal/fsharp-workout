@@ -26,10 +26,11 @@ module ExpressionEngine
 //        what does the Expr type look like?
 //        (hint: Expr is recursive — it references itself)
 
-// TODO: define Operator type
 
-// TODO: define Expr type
-
+type Operator = Add | Subtract | Multiply | Divide
+type Expr =
+    | Number of float
+    | Operation of Operator * Expr * Expr
 
 // --- Step 2: Build expressions by hand ---
 // Construct these as values before writing any functions:
