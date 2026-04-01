@@ -14,7 +14,7 @@ A structured, hands-on F# training program designed for deep-focus sessions. Eac
 | # | Session | Focus | Duration | Status |
 |---|---------|-------|----------|--------|
 | 1 | **Types as Design** | Records, DUs, single-case wrappers, making illegal states unrepresentable | 90 min | ✅ Done |
-| 2 | **Pipelines & Composition** | `\|>`, `>>`, `Option`, `Result`, railway-oriented error handling | 90 min | 🔵 Today |
+| 2 | **Pipelines & Composition** | `\|>`, `>>`, `Option`, `Result`, railway-oriented error handling | 90 min | ✅ Done |
 | 3 | **Pattern Matching & Recursion** | Exhaustive matching, active patterns, recursive data structures | 90 min | ⬜ |
 | 4 | **Modules & Domain Modeling** | Module design, encapsulation, a small bounded context end-to-end | 90 min | ⬜ |
 | 5 | **Async & Concurrency** | `task {}`, `and!`, cancellation, channels, `MailboxProcessor` | 90 min | ⬜ |
