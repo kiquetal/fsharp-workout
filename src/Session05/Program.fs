@@ -167,7 +167,16 @@ let revenueByCustomer (orders: Order list): (CustomerId * float) list =
 let highValueCustomers (threshold: float) (orders: Order list): CustomerId list =
     orders |> List.filter (fun order -> orderTotal order > threshold) |> List.map _.Customer
     
-
+let topSellingProducts (n: int) (orders: Order list): (ProductId * int) list =
+    orders |> List.collect (fun order -> order.Lines |> List.map (fun line -> line.Product, line.Quantity))
+        |> List.groupBy (fun (product, _) -> product)
+        |> List.map (fun (product, items) ->
+            let totalQuantity = items |> List.sumBy (fun (_, quantity) -> quantity)
+            (product, totalQuantity))
+        |> List.sortByDescending snd
+        |> List.truncate n
+              
+      
 
 // --- Step 5: Time-based analysis ---
 // val revenueByMonth : Order list -> (int * int * float) list
