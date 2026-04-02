@@ -107,22 +107,42 @@ module Library =
         Books: Map<BookId, Book>
         Members: Map<MemberId, Member>
     }
-    
     let borrowBook(bookId: BookId) (memberId: MemberId) (library: Library) : Result<Library, LendingError> =
-        match Map.tryFind bookId Library.Books with
-        | None -> Error (BookNotFound bookId)
-        | Some book ->
-            match Map.tryFind memberId library.Members with
-            | None -> Error (MemberNotFound memberId)
-            | Some member ->
-
+        match Map.tryFind bookId library.Books with
+            | None -> Error (BookNotFound bookId)
+            | Some book ->
+                match Map.tryFind memberId library.Members with
+                    | None -> Error (MemberNotFound memberId)
+                    | Some memberN ->
+                            //i know the member and book, exists
+                        let bookAvailableResult = Book.checkout memberId book
+                        let memberCanBorrowResult = Member.canBorrow memberN
+                        match (bookAvailableResult, memberCanBorrowResult) with
+                                | (Error e, _) -> Error e
+                                | (_, false) -> Error (MemberCannotBorrow memberId)
+                                | (Ok checkedOutBook, true) ->
+                                    // update the member with the new boox
+                                    let updatedMemberResult = Member.addBook bookId memberN
+                                    match updatedMemberResult with
+                                        | Error e -> Error e
+                                        | Ok updatedMember ->
+                                            // update the library with the new book and member states
+                                            let updatedBooks = Map.add bookId checkedOutBook library.Books
+                                            let updatedMembers = Map.add memberId updatedMember library.Members
+                                            Ok { library with
+                                                    Books = updatedBooks
+                                                    Members = updatedMembers
+                                                }
 // --- Step 5: Query functions (stretch) ---
 // val availableBooks : Library -> Book list
 // val booksBorrowedBy : MemberId -> Library -> Book list
 
-// TODO: add to LibraryOps module
-
-
+    let availableBooks (library: Library) : Book list =
+        library.Books
+        |> Map.filter (fun _ book -> book.Status = Available)
+        |> Map.values
+        |> Seq.toList
+        
 // --- Try it out ---
 [<EntryPoint>]
 let main _ =
