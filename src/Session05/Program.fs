@@ -182,9 +182,13 @@ let topSellingProducts (n: int) (orders: Order list): (ProductId * int) list =
 // val revenueByMonth : Order list -> (int * int * float) list
 // val ordersInRange : DateTime -> DateTime -> Order list -> Order list
 
-// TODO: implement
-
-
+let revenueByMonth (orders: Order list): (int * int * float) list =
+    orders
+    |> List.groupBy (fun order -> (order.PlacedAt.Year, order.PlacedAt.Month))
+    |> List.map ( fun ((year, month), orders) ->
+                               orders |> List.sumBy orderTotal |> fun revenue -> (year, month, revenue)
+    )
+    
 // --- Step 6: Stretch — composition ---
 // Combine functions with >> to build reusable pipelines
 // Example: let monthlyReport = revenueByMonth >> List.map formatRow >> String.concat "\n"
