@@ -40,6 +40,30 @@ Suggested structure:
 - A module for `Member` operations (create, borrow, return)
 - A module for `Library` that orchestrates both
 
+## How Modules Split Responsibility
+
+```
+Library.borrowBook(bookId, memberId, library)
+│
+├─ 1. Look up book and member
+│     └─ Not found? → Error
+│
+├─ 2. Member.canBorrow(member)
+│     └─ Already has 3 books? → Error
+│
+├─ 3. Book.checkout(memberId, book)
+│     └─ Already checked out? → Error
+│
+├─ 4. Member.addBook(bookId, member)
+│
+└─ 5. Return updated Library (new book state + new member state)
+```
+
+Each module validates what it owns:
+- `Book` module → "is this book available?"
+- `Member` module → "can this member borrow more?"
+- `Library` module → orchestrates both, combines results
+
 ## Main Exercise (50 min)
 
 ### Step 3: Book module
