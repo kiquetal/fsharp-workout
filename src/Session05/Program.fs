@@ -146,10 +146,12 @@ let totalRevenue (orders: Order list) : float =
 let largestOrder (orders: Order list) : Order option =
     orders |> List.maxBy (fun order -> List.length order.Lines) |> Some
 
-let largestQuanityOrder (orders: Order list) : Order option =
+let largestQuantityOrder (orders: Order list) : Order option =
     orders |> List.maxBy (fun order -> order.Lines |> List.sumBy _.Quantity) |> Some
 
 
+let averageOrderValue (orders: Order list) : float =
+    orders |> List.averageBy orderTotal
 
 // --- Step 4: Grouping and filtering ---
 // val revenueByCustomer : Order list -> (CustomerId * float) list
@@ -158,7 +160,10 @@ let largestQuanityOrder (orders: Order list) : Order option =
 //
 // Key functions: List.groupBy, List.sortByDescending, List.truncate, List.collect
 
-// TODO: implement
+let revenueByCustomer (orders: Order list): (CustomerId * float) list =
+   let orderByCustomers = orders |> List.groupBy _.Customer
+   orderByCustomers |> List.map (fun (customer, orders) -> customer, orders |> List.sumBy orderTotal)
+   
 
 
 // --- Step 5: Time-based analysis ---
