@@ -168,7 +168,7 @@ let main _ =
 
     printfn "\n=== Fold Exercises ==="
     printfn "  countNodes nested: %d" (countNodes nested)
-    // printfn "  maxNumber deep: %f" (maxNumber deep)
-    // printfn "  collectNumbers nested: %A" (collectNumbers nested)
+    printfn "  maxNumber deep: %f" (maxNumber deep)
+    printfn "  collectNumbers nested: %A" (collectNumbers nested)
 
     0
