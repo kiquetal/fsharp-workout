@@ -106,6 +106,14 @@ Each operation must:
 
 ## Gotchas & Insights
 
+### Each module validates what it owns
+
+- `Book` module → "is this book available?" (knows about `BookStatus`)
+- `Member` module → "does this member already have this book?" + "can they borrow more?" (knows about `BorrowedBooks`)
+- `Library` module → calls both, combines results (orchestrates)
+
+A module never checks data it doesn't own. `Member` doesn't know about `BookStatus`. `Book` doesn't know how many books a member has. `Library` is the only one that sees both.
+
 ### Record pattern matching
 
 You can pattern match on records by naming the fields you care about — the rest are ignored:
