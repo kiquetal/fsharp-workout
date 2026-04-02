@@ -15,8 +15,8 @@ A structured, hands-on F# training program designed for deep-focus sessions. Eac
 |---|---------|-------|----------|--------|
 | 1 | **Types as Design** | Records, DUs, single-case wrappers, making illegal states unrepresentable | 90 min | ✅ Done |
 | 2 | **Pipelines & Composition** | `\|>`, `>>`, `Option`, `Result`, railway-oriented error handling | 90 min | ✅ Done |
-| 3 | **Pattern Matching & Recursion** | Exhaustive matching, active patterns, recursive data structures | 90 min | 🔵 Today |
-| 4 | **Modules & Domain Modeling** | Module design, encapsulation, a small bounded context end-to-end | 90 min | ⬜ |
+| 3 | **Pattern Matching & Recursion** | Exhaustive matching, active patterns, recursive data structures | 90 min | ✅ Done |
+| 4 | **Modules & Domain Modeling** | Module design, encapsulation, a small bounded context end-to-end | 90 min | ✅ Done |
 | 5 | **Async & Concurrency** | `task {}`, `and!`, cancellation, channels, `MailboxProcessor` | 90 min | ⬜ |
 | 6 | **Integration & Capstone** | JSON serialization, HTTP, CLI app — tie everything together | 90 min | ⬜ |
 
@@ -73,16 +73,36 @@ After building state machines by hand (Sessions 7–8), you'll understand what t
 
 → [Full details](docs/session02.md)
 
-### Session 3 — Pattern Matching & Recursion 🔵
+### Session 3 — Pattern Matching & Recursion ✅
 
-**Objective:** Exhaustive matching, active patterns, recursive data structures.
+**Objective:** Exhaustive matching, recursive data structures, and generic folds.
 
-**What you'll learn:**
-- Exhaustive matching over DUs
-- Active patterns for complex matches
-- Recursive data structures and processing
+**What you learned:**
+- Recursive DU types (`Expr` — a type that references itself)
+- Structural recursion — one match branch per DU case
+- `evaluate` with `Result.bind` for railway-oriented recursion
+- `format` for recursive pretty-printing
+- `simplify` for tree transformation (algebraic rules)
+- Generic `fold` (catamorphism) — extracting the common recursion pattern
+- Factory worker analogy — each branch node combines finished results from below
 
 → [Full details](docs/session03.md)
+
+### Session 4 — Modules & Domain Modeling ✅
+
+**Objective:** Organize domain logic into modules with clear boundaries.
+
+**What you learned:**
+- Module design — group related functions, each module validates what it owns
+- `Book` module — status transitions (Available ↔ CheckedOut)
+- `Member` module — borrow limits, duplicate checks
+- `Library` module — orchestration, calling Book + Member and combining results
+- Record updates with `{ x with ... }` — immutable state transitions
+- `Map` as in-memory storage — `tryFind`, `add`, `filter`, `values`
+- Query functions — `availableBooks`, `booksBorrowedBy`
+- Domain vs storage separation — domain stays pure, repository translates
+
+→ [Full details](docs/session04.md)
 
 ## Session Format
 
@@ -108,6 +128,8 @@ src/
 docs/
   session01.md     ← Full session 1 details, exercises, concepts
   session02.md     ← Full session 2 details, exercises, concepts
+  session03.md     ← Full session 3 details, exercises, concepts
+  session04.md     ← Full session 4 details, exercises, concepts
   patterns.md      ← Railway-oriented programming, parse don't validate
   java21-functional.md ← F# patterns translated to Java 21+
   learning-notes.md    ← Validation boundaries, complex types, Result.sequence
