@@ -1,4 +1,4 @@
-module OrderAnalytics
+﻿module OrderAnalytics
 
 // ============================================
 // SESSION 5 — Collections & Pipelines
@@ -40,8 +40,93 @@ type Order = {
 // Create 8-10 orders with different customers, products, dates.
 // This is your test dataset.
 
-// TODO: let sampleOrders = [ ... ]
-
+ let sampleOrders = [{
+    Id = "order1"
+    Customer = CustomerId "customer1"
+    Lines = [
+        { Product = ProductId "productA"; Quantity = 2; UnitPrice = 10.0 }
+        { Product = ProductId "productB"; Quantity = 1; UnitPrice = 20.0 }
+    ]
+    PlacedAt = System.DateTime(2024, 1, 15)
+ },
+    {
+        Id = "order2"
+        Customer =
+            CustomerId "customer2"
+        Lines = [
+            { Product = ProductId "productA"; Quantity = 1; UnitPrice = 10.0 }
+            { Product = ProductId "productC"; Quantity = 3; UnitPrice = 15.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 2, 10)
+    },
+    {
+        Id = "order3"
+        Customer = CustomerId "customer1"
+        Lines = [
+            { Product = ProductId "productB"; Quantity = 2; UnitPrice = 20.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 3, 5)
+    },
+    
+    {
+        Id = "order4"
+        Customer = CustomerId "customer3"
+        Lines = [
+            { Product = ProductId "productC"; Quantity = 1; UnitPrice = 15.0 }
+            { Product = ProductId "productD"; Quantity = 4; UnitPrice = 5.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 1, 20)
+    },
+    {
+        Id = "order5"
+        Customer = CustomerId "customer2"
+        Lines = [
+            { Product = ProductId "productA"; Quantity = 2; UnitPrice = 10.0 }
+            { Product = ProductId "productD"; Quantity = 1; UnitPrice = 5.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 2, 25)
+        
+        
+    },
+    {
+        Id = "order6"
+        Customer = CustomerId "customer4"
+        Lines = [
+            { Product = ProductId "productB"; Quantity = 1; UnitPrice = 20.0 }
+            { Product = ProductId "productC"; Quantity = 2; UnitPrice = 15.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 3, 15)
+    },
+    {
+        Id = "order7"
+        Customer = CustomerId "customer3"
+        Lines = [
+            { Product = ProductId "productA"; Quantity = 3; UnitPrice = 10.0 }
+            { Product = ProductId "productD"; Quantity = 2; UnitPrice = 5.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 1, 30)
+    },
+    {
+        Id = "order8"
+        Customer = CustomerId "customer4"
+        Lines = [
+            { Product = ProductId "productC"; Quantity = 1; UnitPrice = 15.0 }
+            { Product = ProductId "productD"; Quantity = 3; UnitPrice = 5.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 2, 5)     
+    },
+    {
+        Id = "order9"
+        Customer
+            = CustomerId "customer1"
+        Lines = [
+            { Product = ProductId "productA"; Quantity = 1; UnitPrice = 10.0 }
+            { Product = ProductId "productC"; Quantity = 2; UnitPrice = 15.0 }
+        ]
+        PlacedAt = System.DateTime(2024, 3, 20)
+    }
+    ]
+    
 
 // --- Step 3: Basic aggregations ---
 // val orderTotal : Order -> float
