@@ -95,6 +95,26 @@ let monthlyReport = revenueByMonth >> List.map formatMonthRow >> String.concat "
 
 ## Gotchas & Insights
 
+### `List.map` vs `List.collect` — when your lambda returns a list
+
+If your lambda returns a list, `List.map` nests them:
+
+```fsharp
+orders |> List.map (fun o -> o.Lines)
+// type: OrderLine list list  ← nested!
+// [ [line1; line2]; [line3]; [line4; line5] ]
+```
+
+`List.collect` does the same but flattens:
+
+```fsharp
+orders |> List.collect (fun o -> o.Lines)
+// type: OrderLine list  ← flat
+// [line1; line2; line3; line4; line5]
+```
+
+Rule: if your lambda returns a single value, use `List.map`. If it returns a list, use `List.collect`.
+
 ### `List.collect` is `flatMap`
 
 ```fsharp
