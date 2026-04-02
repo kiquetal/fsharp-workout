@@ -142,6 +142,14 @@ module Library =
         |> Map.filter (fun _ book -> book.Status = Available)
         |> Map.values
         |> Seq.toList
+    let bookBoorow (library: Library) (memberId: MemberId) : Book  list=
+        match Map.tryFind memberId library.Members with
+            | None -> []
+            | Some memberN ->
+                     memberN.BorrowedBooks |> List.map (fun bookId -> Map.tryFind bookId library.Books) |> List.choose id
+         
+       
+       
         
 // --- Try it out ---
 [<EntryPoint>]
