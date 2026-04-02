@@ -68,6 +68,10 @@ module Book =
         | Available -> Ok { book with Status = CheckedOut memberId }
         | CheckedOut _ -> Error (BookAlreadyCheckedOut book.Id)
 
+    let returnBook (b: Book) =
+        match b.Status with
+        | Available -> Error (BookNotCheckedOut b.Id)
+        | CheckedOut _ -> Ok { b with Status = Available }
 // --- Step 3: Member module ---
 // Group member-related operations together.
 //
