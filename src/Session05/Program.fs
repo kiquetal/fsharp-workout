@@ -40,93 +40,43 @@ type Order = {
 // Create 8-10 orders with different customers, products, dates.
 // This is your test dataset.
 
-let sampleOrders = [{
-    Id = "order1"
-    Customer = CustomerId "customer1"
-    Lines = [
-        { Product = ProductId "productA"; Quantity = 2; UnitPrice = 10.0 }
-        { Product = ProductId "productB"; Quantity = 1; UnitPrice = 20.0 }
-    ]
-    PlacedAt = System.DateTime(2024, 1, 15)
- },
-    {
-        Id = "order2"
-        Customer =
-            CustomerId "customer2"
-        Lines = [
-            { Product = ProductId "productA"; Quantity = 1; UnitPrice = 10.0 }
-            { Product = ProductId "productC"; Quantity = 3; UnitPrice = 15.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 2, 10)
-    },
-    {
-        Id = "order3"
-        Customer = CustomerId "customer1"
-        Lines = [
-            { Product = ProductId "productB"; Quantity = 2; UnitPrice = 20.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 3, 5)
-    },
-    
-    {
-        Id = "order4"
-        Customer = CustomerId "customer3"
-        Lines = [
-            { Product = ProductId "productC"; Quantity = 1; UnitPrice = 15.0 }
-            { Product = ProductId "productD"; Quantity = 4; UnitPrice = 5.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 1, 20)
-    },
-    {
-        Id = "order5"
-        Customer = CustomerId "customer2"
-        Lines = [
-            { Product = ProductId "productA"; Quantity = 2; UnitPrice = 10.0 }
-            { Product = ProductId "productD"; Quantity = 1; UnitPrice = 5.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 2, 25)
-        
-        
-    },
-    {
-        Id = "order6"
-        Customer = CustomerId "customer4"
-        Lines = [
-            { Product = ProductId "productB"; Quantity = 1; UnitPrice = 20.0 }
-            { Product = ProductId "productC"; Quantity = 2; UnitPrice = 15.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 3, 15)
-    },
-    {
-        Id = "order7"
-        Customer = CustomerId "customer3"
-        Lines = [
-            { Product = ProductId "productA"; Quantity = 3; UnitPrice = 10.0 }
-            { Product = ProductId "productD"; Quantity = 2; UnitPrice = 5.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 1, 30)
-    },
-    {
-        Id = "order8"
-        Customer = CustomerId "customer4"
-        Lines = [
-            { Product = ProductId "productC"; Quantity = 1; UnitPrice = 15.0 }
-            { Product = ProductId "productD"; Quantity = 3; UnitPrice = 5.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 2, 5)     
-    },
-    {
-        Id = "order9"
-        Customer
-            = CustomerId "customer1"
-        Lines = [
-            { Product = ProductId "productA"; Quantity = 1; UnitPrice = 10.0 }
-            { Product = ProductId "productC"; Quantity = 2; UnitPrice = 15.0 }
-        ]
-        PlacedAt = System.DateTime(2024, 3, 20)
-    }
-    ]
-    
+let sampleOrders = [
+    { Id = "order1"; Customer = CustomerId "customer1"
+      Lines = [ { Product = ProductId "productA"; Quantity = 2; UnitPrice = 10.0 }
+                { Product = ProductId "productB"; Quantity = 1; UnitPrice = 20.0 } ]
+      PlacedAt = System.DateTime(2024, 1, 15) }
+    { Id = "order2"; Customer = CustomerId "customer2"
+      Lines = [ { Product = ProductId "productA"; Quantity = 1; UnitPrice = 10.0 }
+                { Product = ProductId "productC"; Quantity = 3; UnitPrice = 15.0 } ]
+      PlacedAt = System.DateTime(2024, 2, 10) }
+    { Id = "order3"; Customer = CustomerId "customer1"
+      Lines = [ { Product = ProductId "productB"; Quantity = 2; UnitPrice = 20.0 } ]
+      PlacedAt = System.DateTime(2024, 3, 5) }
+    { Id = "order4"; Customer = CustomerId "customer3"
+      Lines = [ { Product = ProductId "productC"; Quantity = 1; UnitPrice = 15.0 }
+                { Product = ProductId "productD"; Quantity = 4; UnitPrice = 5.0 } ]
+      PlacedAt = System.DateTime(2024, 1, 20) }
+    { Id = "order5"; Customer = CustomerId "customer2"
+      Lines = [ { Product = ProductId "productA"; Quantity = 2; UnitPrice = 10.0 }
+                { Product = ProductId "productD"; Quantity = 1; UnitPrice = 5.0 } ]
+      PlacedAt = System.DateTime(2024, 2, 25) }
+    { Id = "order6"; Customer = CustomerId "customer4"
+      Lines = [ { Product = ProductId "productB"; Quantity = 1; UnitPrice = 20.0 }
+                { Product = ProductId "productC"; Quantity = 2; UnitPrice = 15.0 } ]
+      PlacedAt = System.DateTime(2024, 3, 15) }
+    { Id = "order7"; Customer = CustomerId "customer3"
+      Lines = [ { Product = ProductId "productA"; Quantity = 3; UnitPrice = 10.0 }
+                { Product = ProductId "productD"; Quantity = 2; UnitPrice = 5.0 } ]
+      PlacedAt = System.DateTime(2024, 1, 30) }
+    { Id = "order8"; Customer = CustomerId "customer4"
+      Lines = [ { Product = ProductId "productC"; Quantity = 1; UnitPrice = 15.0 }
+                { Product = ProductId "productD"; Quantity = 3; UnitPrice = 5.0 } ]
+      PlacedAt = System.DateTime(2024, 2, 5) }
+    { Id = "order9"; Customer = CustomerId "customer1"
+      Lines = [ { Product = ProductId "productA"; Quantity = 1; UnitPrice = 10.0 }
+                { Product = ProductId "productC"; Quantity = 2; UnitPrice = 15.0 } ]
+      PlacedAt = System.DateTime(2024, 3, 20) }
+]
 
 // --- Step 3: Basic aggregations ---
 // val orderTotal : Order -> float
@@ -208,6 +158,35 @@ let monthlyReport : Order list -> string =
 // --- Try it out ---
 [<EntryPoint>]
 let main _ =
-    printfn "Session 5 — Order Analytics"
-    // TODO: run your functions on sampleOrders and print results
+    printfn "Session 5 — Order Analytics\n"
+
+    printfn "=== Basic Aggregations ==="
+    printfn "  Total revenue: $%.2f" (totalRevenue sampleOrders)
+    printfn "  Average order value: $%.2f" (averageOrderValue sampleOrders)
+    match largestOrder sampleOrders with
+    | Some o -> printfn "  Largest order (by lines): %s" o.Id
+    | None -> printfn "  No orders"
+    match largestQuantityOrder sampleOrders with
+    | Some o -> printfn "  Largest order (by quantity): %s" o.Id
+    | None -> printfn "  No orders"
+
+    printfn "\n=== Revenue by Customer ==="
+    revenueByCustomer sampleOrders
+    |> List.iter (fun (CustomerId c, rev) -> printfn "  %s: $%.2f" c rev)
+
+    printfn "\n=== High Value Customers (>$50) ==="
+    highValueCustomers 50.0 sampleOrders
+    |> List.iter (fun (CustomerId c) -> printfn "  %s" c)
+
+    printfn "\n=== Top 3 Selling Products ==="
+    topSellingProducts 3 sampleOrders
+    |> List.iter (fun (ProductId p, qty) -> printfn "  %s: %d units" p qty)
+
+    printfn "\n=== Revenue by Month ==="
+    printfn "%s" (monthlyReport sampleOrders)
+
+    printfn "\n=== Orders in Jan 2024 ==="
+    ordersInRange (System.DateTime(2024, 1, 1)) (System.DateTime(2024, 1, 31)) sampleOrders
+    |> List.iter (fun o -> printfn "  %s: $%.2f" o.Id (orderTotal o))
+
     0

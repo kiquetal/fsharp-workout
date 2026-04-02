@@ -17,7 +17,7 @@ A structured, hands-on F# training program designed for deep-focus sessions. Eac
 | 2 | **Pipelines & Composition** | `\|>`, `>>`, `Option`, `Result`, railway-oriented error handling | 90 min | ✅ Done |
 | 3 | **Pattern Matching & Recursion** | Exhaustive matching, active patterns, recursive data structures | 90 min | ✅ Done |
 | 4 | **Modules & Domain Modeling** | Module design, encapsulation, a small bounded context end-to-end | 90 min | ✅ Done |
-| 5 | **Collections & Pipelines** | `List.map`, `List.groupBy`, `List.collect`, pipeline composition with `\|>` and `>>` | 90 min | ⬜ |
+| 5 | **Collections & Pipelines** | `List.map`, `List.groupBy`, `List.collect`, pipeline composition with `\|>` and `>>` | 90 min | ✅ Done |
 | 6 | **Integration & Capstone** | JSON serialization, HTTP, CLI app — tie everything together | 90 min | ⬜ |
 
 ## Part II — State Machines & Data Transformation
@@ -103,6 +103,22 @@ After building state machines by hand (Sessions 7–8), you'll understand what t
 - Domain vs storage separation — domain stays pure, repository translates
 
 → [Full details](docs/session04.md)
+
+### Session 5 — Collections & Pipelines ✅
+
+**Objective:** Master F#'s collection functions and pipeline composition.
+
+**What you learned:**
+- `List.map`, `List.filter`, `List.sumBy` — basic transformations
+- `List.collect` — flatMap for F#, use when your lambda returns a list
+- `List.groupBy` — group items by key, returns `(key * items) list`
+- `List.sortByDescending`, `List.truncate` — ranking and limiting
+- `List.choose` — map + filter in one step using `Option`
+- `snd` / `fst` — extract tuple elements
+- `>>` composition — build reusable pipelines without data
+- `|>` vs `>>` — "run now" vs "save for later"
+
+→ [Full details](docs/session05.md)
 
 ## Session Format
 
