@@ -28,8 +28,19 @@ open System
 // Reading — station, temperature, humidity, timestamp
 // ParseError — what can go wrong
 
-// TODO: define types
+type StationId = StationId of string
+type Temperature = private Temperature of float
+type Humidity = private Humidity of float
 
+type Reading = {
+    Station: StationId
+    Temperature: Temperature
+    Humidity: Humidity
+    Timestamp: DateTime
+}
+type Error =
+    | ParseError of string
+    | ValidationError of string
 
 // --- Step 2: Parsing module ---
 // Parse "station-01,23.5,65,2024-03-15T10:30:00" into a Reading
