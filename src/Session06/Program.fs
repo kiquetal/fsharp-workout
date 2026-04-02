@@ -1,2 +1,98 @@
-﻿// For more information see https://aka.ms/fsharp-console-apps
-printfn "Hello from F#"
+module WeatherDashboard
+
+// ============================================
+// SESSION 6 — Integration & Capstone
+// ============================================
+// Tie together everything from Sessions 1–5.
+// Parse raw weather data, validate it,
+// aggregate it, and display a report.
+//
+// No new concepts — just applying what you know.
+//
+// Steps:
+// 1. Define domain types
+// 2. Parsing module
+// 3. Validation module
+// 4. Analytics module
+// 5. Report module
+// 6. Wire it all up in main
+// ============================================
+
+open System
+
+
+// --- Step 1: Define domain types ---
+// StationId — single-case DU
+// Temperature — single-case DU with validation
+// Humidity — single-case DU with validation
+// Reading — station, temperature, humidity, timestamp
+// ParseError — what can go wrong
+
+// TODO: define types
+
+
+// --- Step 2: Parsing module ---
+// Parse "station-01,23.5,65,2024-03-15T10:30:00" into a Reading
+//
+// val parseLine : string -> Result<Reading, ParseError>
+// val parseAll : string list -> Reading list * ParseError list
+
+// TODO: module Parsing = ...
+
+
+// --- Step 3: Validation module ---
+// Business rules: temp between -50 and 60, humidity 0-100, not in future
+//
+// val validateReading : Reading -> Result<Reading, ValidationError>
+
+// TODO: module Validation = ...
+
+
+// --- Step 4: Analytics module ---
+// Aggregate readings using Session 5 patterns
+//
+// val averageTemperature : Reading list -> float
+// val averageHumidity : Reading list -> float
+// val hottestReading : Reading list -> Reading option
+// val coldestReading : Reading list -> Reading option
+// val readingsByStation : Reading list -> (StationId * Reading list) list
+// val dailyAverages : Reading list -> (DateTime * float * float) list
+
+// TODO: module Analytics = ...
+
+
+// --- Step 5: Report module ---
+// Format analytics into readable output
+//
+// val stationSummary : StationId -> Reading list -> string
+// val fullReport : Reading list -> ParseError list -> string
+
+// TODO: module Report = ...
+
+
+// --- Sample data ---
+let rawLines = [
+    "station-01,23.5,65,2024-03-15T10:30:00"
+    "station-02,18.2,70,2024-03-15T11:00:00"
+    "station-01,bad,45,2024-03-15T12:00:00"
+    "station-03,25.1,80,2024-03-15T13:00:00"
+    "station-02,19.8,68,2024-03-15T14:00:00"
+    "station-01,22.0,60,2024-03-15T15:00:00"
+    "station-03,,75,2024-03-15T16:00:00"
+    "station-02,17.5,72,2024-03-16T09:00:00"
+    "station-01,24.3,58,2024-03-16T10:00:00"
+    "station-03,26.8,82,2024-03-16T11:00:00"
+    "station-02,20.1,66,2024-03-16T12:00:00"
+    "station-01,21.5,62,2024-03-16T13:00:00"
+    "station-03,150.0,85,2024-03-16T14:00:00"
+    "too,few,fields"
+    "station-02,19.0,67,2024-03-16T15:00:00"
+]
+
+
+// --- Step 6: Wire it all up ---
+[<EntryPoint>]
+let main _ =
+    printfn "Session 6 — Weather Station Dashboard"
+    // TODO: parse → validate → analyze → report
+    0
