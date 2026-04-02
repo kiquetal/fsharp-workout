@@ -80,7 +80,9 @@ module Book =
 // val addBook : BookId -> Member -> Result<Member, LendingError>
 // val removeBook : BookId -> Member -> Result<Member, LendingError>
 
-// TODO: module Member = ...
+module Member =
+    let create (id: MemberId) (name: string) : Memmber =
+        { Id = id; Name = name; BorrowedBooks = [] }
 
 
 // --- Step 4: Library module (orchestration) ---
