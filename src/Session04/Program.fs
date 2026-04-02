@@ -83,7 +83,9 @@ module Book =
 module Member =
     let create (id: MemberId) (name: string) : Memmber =
         { Id = id; Name = name; BorrowedBooks = [] }
-
+    let canBorrow (m: Member) =
+        match m with
+        | { BorrowedBooks = books } -> List.length books < 5 // arbitrary limit
 
 // --- Step 4: Library module (orchestration) ---
 // Holds all books and members. Coordinates operations.
