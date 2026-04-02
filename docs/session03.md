@@ -232,6 +232,29 @@ let org =
 
 TODO: write `foldOrg` and use it to calculate total salary.
 
+### The factory worker analogy for tree fold
+
+Think of each branch node as a worker sitting at their station. They don't go into the tree — they just wait for results from below.
+
+```
+      Worker C (*)
+      / \
+  Worker B (+)   4
+    / \
+   2   3
+```
+
+1. Worker B sits at `+`. Waits for results from below.
+2. Someone delivers `"2"` from the left. Someone delivers `"3"` from the right.
+3. Worker B combines: `"(" + "2" + " + " + "3" + ")"` → passes `"(2 + 3)"` up.
+4. Worker C sits at `*`. Waits for results from below.
+5. Someone delivers `"(2 + 3)"` from the left. Someone delivers `"4"` from the right.
+6. Worker C combines: `"(" + "(2 + 3)" + " * " + "4" + ")"` → done.
+
+Each worker only sees what's handed to them — two finished results. They don't know or care how those results were made. `fold` does the delivery.
+
+The combine function is what each worker does: take two things, produce one thing. Same function at every station, different inputs.
+
 ### Why recursive types enable recursion
 
 The key insight: a branch case can contain more of itself. That's what makes the type recursive, and that's what makes `fold` recurse.
