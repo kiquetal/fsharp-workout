@@ -220,6 +220,37 @@ let org =
 
 TODO: write `foldOrg` and use it to calculate total salary.
 
+### Why recursive types enable recursion
+
+The key insight: a branch case can contain more of itself. That's what makes the type recursive, and that's what makes `fold` recurse.
+
+```fsharp
+// Expr: an Operation contains Expr children — which can be more Operations
+Operation(Mul,
+    Operation(Add, Number 2.0, Number 3.0),   ← Expr inside Expr
+    Number 4.0)
+
+// Employee: a Manager's reports list contains Employees — which can be more Managers
+Manager("Alice", 100000, [
+    Manager("Bob", 80000, [                    ← Manager inside Manager
+        Individual("Carol", 50000)
+    ])
+])
+
+// Html: an Element's children list contains Html — which can be more Elements
+Element("div", [
+    Element("p", [Text "hello"])               ← Element inside Element
+])
+```
+
+Every recursive type follows this pattern:
+- **Leaf case** — holds plain data, no self-reference → recursion stops here
+- **Branch case** — holds children of the same type → recursion goes deeper
+
+`fold` just walks this structure. When it hits a leaf, it calls the leaf handler. When it hits a branch, it folds each child first (they might be branches too — more recursion), then passes the results to the branch handler.
+
+The branch handler never knows about the tree. It just receives already-computed results and combines them.
+
 ### The pattern
 
 Every fold follows the same recipe:
