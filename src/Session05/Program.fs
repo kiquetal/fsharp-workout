@@ -198,7 +198,11 @@ let ordersInRange (start: System.DateTime) (end': System.DateTime) (orders: Orde
 // Combine functions with >> to build reusable pipelines
 // Example: let monthlyReport = revenueByMonth >> List.map formatRow >> String.concat "\n"
 
-// TODO: implement
+let formatRow (year: int, month: int, revenue: float) : string =
+    sprintf "%04d-%02d: $%.2f" year month revenue
+
+let monthlyReport : Order list -> string =
+    revenueByMonth >> List.map formatRow >> String.concat "\n"
 
 
 // --- Try it out ---
