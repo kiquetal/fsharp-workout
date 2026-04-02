@@ -84,7 +84,7 @@ module Member =
     let create (id: MemberId) (name: string) : Member =
         { Id = id; Name = name; BorrowedBooks = [] }
     let canBorrow (m: Member) : bool =
-        List.length m.BorrowedBooks < 5
+        List.length m.BorrowedBooks < 3 // example limit of 3 books
      
     let addBook (bookId: BookId) (m: Member) =
         match (canBorrow m, List.contains bookId m.BorrowedBooks) with
@@ -102,8 +102,19 @@ module Member =
 //
 // Each operation: look up → validate → update → return new state
 
-// TODO: module LibraryOps = ...
-
+module Library =
+    type Library = {
+        Books: Map<BookId, Book>
+        Members: Map<MemberId, Member>
+    }
+    
+    let borrowBook(bookId: BookId) (memberId: MemberId) (library: Library) : Result<Library, LendingError> =
+        match Map.tryFind bookId Library.Books with
+        | None -> Error (BookNotFound bookId)
+        | Some book ->
+            match Map.tryFind memberId library.Members with
+            | None -> Error (MemberNotFound memberId)
+            | Some member ->
 
 // --- Step 5: Query functions (stretch) ---
 // val availableBooks : Library -> Book list
