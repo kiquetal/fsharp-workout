@@ -1,4 +1,4 @@
-module Library
+﻿module Library
 
 // ============================================
 // SESSION 4 — Modules & Domain Modeling
@@ -24,12 +24,32 @@ module Library
 // Member — id, name, borrowed book ids
 // LendingError — what can go wrong?
 
-// TODO: define BookId
-// TODO: define MemberId
-// TODO: define BookStatus
-// TODO: define Book
-// TODO: define Member
-// TODO: define LendingError
+
+type BookId = BookId of string
+type MemberId = MemberId of string
+type BookStatus = Available | CheckedOut of MemberId
+
+type Book =
+    {
+        Id: BookId
+        Title: string
+        Status: BookStatus
+        
+    }
+
+type Memmber = {
+    Id: MemberId
+    Name: string
+    BorrowedBooks: BookId list
+}
+
+type LendingError =
+    | BookNotFound of BookId
+    | MemberNotFound of MemberId
+    | BookAlreadyCheckedOut of BookId
+    | MemberCannotBorrow of MemberId
+    | BookNotCheckedOut of BookId
+    | BookCheckedOutByAnotherMember of BookId * MemberId
 
 
 // --- Step 2: Book module ---
@@ -39,8 +59,14 @@ module Library
 // val checkout : MemberId -> Book -> Result<Book, LendingError>
 // val returnBook : Book -> Result<Book, LendingError>
 
-// TODO: module Book = ...
-
+module Book =
+    let create (id: BookId) (title: string) : Book =
+        { Id = id; Title = title; Status = Available }
+        
+    let checkout (memberId: MemberId) (book: Book) =
+        match book.Status with
+        | Available -> Ok { book with Status = CheckedOut memberId }
+        | CheckedOut _ -> Error (BookAlreadyCheckedOut book.Id)
 
 // --- Step 3: Member module ---
 // Group member-related operations together.
