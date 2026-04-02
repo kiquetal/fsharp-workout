@@ -164,6 +164,9 @@ let revenueByCustomer (orders: Order list): (CustomerId * float) list =
    let orderByCustomers = orders |> List.groupBy _.Customer
    orderByCustomers |> List.map (fun (customer, orders) -> customer, orders |> List.sumBy orderTotal)
    
+let highValueCustomers (threshold: float) (orders: Order list): CustomerId list =
+    orders |> List.filter (fun order -> orderTotal order > threshold) |> List.map _.Customer
+    
 
 
 // --- Step 5: Time-based analysis ---
