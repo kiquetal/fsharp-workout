@@ -37,7 +37,7 @@ type Book =
         
     }
 
-type Memmber = {
+type Member = {
     Id: MemberId
     Name: string
     BorrowedBooks: BookId list
@@ -81,12 +81,17 @@ module Book =
 // val removeBook : BookId -> Member -> Result<Member, LendingError>
 
 module Member =
-    let create (id: MemberId) (name: string) : Memmber =
+    let create (id: MemberId) (name: string) : Member =
         { Id = id; Name = name; BorrowedBooks = [] }
-    let canBorrow (m: Member) =
-        match m with
-        | { BorrowedBooks = books } -> List.length books < 5 // arbitrary limit
-
+    let canBorrow (m: Member) : bool =
+        List.length m.BorrowedBooks < 5
+     
+    let addBook (bookId: BookId) (m: Member) =
+        match (canBorrow m, List.contains bookId m.BorrowedBooks) with
+        | (false, _) -> Error (MemberCannotBorrow m.Id)
+        | (_, true) -> Error (MemberCannotBorrow m.Id) // already has the book
+        | _ -> Ok { m with BorrowedBooks = bookId :: m.BorrowedBooks }
+        
 // --- Step 4: Library module (orchestration) ---
 // Holds all books and members. Coordinates operations.
 //

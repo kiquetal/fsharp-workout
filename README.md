@@ -60,11 +60,11 @@ After building state machines by hand (Sessions 7–8), you'll understand what t
 
 → [Full details](docs/session01.md)
 
-### Session 2 — Railway-Oriented Programming 🔵
+### Session 2 — Pipelines & Composition ✅
 
 **Objective:** Chain fallible operations cleanly, accumulate errors, and compose processing pipelines.
 
-**What you'll learn:**
+**What you learned:**
 - `bind`, `map2`, `apply` — the Result combinators that replace nested matching
 - Applicative validation — collect ALL errors instead of stopping at the first
 - Active patterns — custom decompositions for readable `match` expressions
@@ -72,6 +72,17 @@ After building state machines by hand (Sessions 7–8), you'll understand what t
 - Batch processing — partition successes and failures across a list
 
 → [Full details](docs/session02.md)
+
+### Session 3 — Pattern Matching & Recursion 🔵
+
+**Objective:** Exhaustive matching, active patterns, recursive data structures.
+
+**What you'll learn:**
+- Exhaustive matching over DUs
+- Active patterns for complex matches
+- Recursive data structures and processing
+
+→ [Full details](docs/session03.md)
 
 ## Session Format
 
