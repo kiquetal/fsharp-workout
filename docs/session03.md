@@ -113,6 +113,18 @@ Then rewrite `evaluate` and `format` using `fold`.
 
 ## Gotchas & Insights
 
+### `unit` is F#'s `void`
+
+In Java, `void` means "returns nothing." In F#, `unit` is an actual value: `()`. Functions that do side effects (like printing) return `unit`.
+
+This means you can use `fold` even for side effects — `'a` becomes `unit`:
+
+```fsharp
+fold (fun n -> printfn "mi numero es %g" n) (fun _ _ _ -> ()) myExpr
+```
+
+Each handler returns `()`. The fold walks the tree, prints at each leaf, and the operation handler discards the results.
+
 ### `Result.bind` is Java's `flatMap`
 
 | F# | Java | When to use |
