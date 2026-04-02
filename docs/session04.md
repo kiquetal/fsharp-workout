@@ -104,6 +104,35 @@ Each operation must:
 - `booksBorrowedBy : MemberId -> Library -> Book list`
 - `overdueReport : Library -> string` (if you add a due date to CheckedOut)
 
+## Gotchas & Insights
+
+### Record pattern matching
+
+You can pattern match on records by naming the fields you care about — the rest are ignored:
+
+```fsharp
+type Member = { Name: string; BorrowedBooks: BookId list }
+
+match member with
+| { Name = "Alice"; BorrowedBooks = books } -> printfn "Alice has %d books" (List.length books)
+| { BorrowedBooks = [] }                    -> printfn "No books borrowed"
+| { BorrowedBooks = [single] }              -> printfn "Has exactly one book"
+| _                                         -> printfn "Something else"
+```
+
+Useful when matching on field values and binding at the same time. For simple field access, dot notation is cleaner:
+
+```fsharp
+// prefer this for simple reads
+let canBorrow (m: Member) = List.length m.BorrowedBooks < 3
+
+// prefer pattern match when checking shape
+let describe (m: Member) =
+    match m with
+    | { BorrowedBooks = [] } -> "No books"
+    | { BorrowedBooks = books } -> sprintf "%d books" (List.length books)
+```
+
 ## Key Concepts
 
 | Concept | What it means | Where you'll see it |
