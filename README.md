@@ -17,7 +17,7 @@ A structured, hands-on F# training program designed for deep-focus sessions. Eac
 | 2 | **Pipelines & Composition** | `\|>`, `>>`, `Option`, `Result`, railway-oriented error handling | 90 min | ✅ Done |
 | 3 | **Pattern Matching & Recursion** | Exhaustive matching, active patterns, recursive data structures | 90 min | ✅ Done |
 | 4 | **Modules & Domain Modeling** | Module design, encapsulation, a small bounded context end-to-end | 90 min | ✅ Done |
-| 5 | **Async & Concurrency** | `task {}`, `and!`, cancellation, channels, `MailboxProcessor` | 90 min | ⬜ |
+| 5 | **Collections & Pipelines** | `List.map`, `List.groupBy`, `List.collect`, pipeline composition with `\|>` and `>>` | 90 min | ⬜ |
 | 6 | **Integration & Capstone** | JSON serialization, HTTP, CLI app — tie everything together | 90 min | ⬜ |
 
 ## Part II — State Machines & Data Transformation
