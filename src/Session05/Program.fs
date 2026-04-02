@@ -185,9 +185,14 @@ let topSellingProducts (n: int) (orders: Order list): (ProductId * int) list =
 let revenueByMonth (orders: Order list): (int * int * float) list =
     orders
     |> List.groupBy (fun order -> (order.PlacedAt.Year, order.PlacedAt.Month))
-    |> List.map ( fun ((year, month), orders) ->
-                               orders |> List.sumBy orderTotal |> fun revenue -> (year, month, revenue)
+    |> List.map ( fun ((year, month), orderInMonth) ->
+                              let revenue =  orderInMonth |> List.sumBy orderTotal
+                              (year, month, revenue)
     )
+
+let ordersInRange (start: System.DateTime) (end': System.DateTime) (orders: Order list): Order list =
+    orders |> List.filter (fun order -> order.PlacedAt >= start && order.PlacedAt <= end')
+    
     
 // --- Step 6: Stretch — composition ---
 // Combine functions with >> to build reusable pipelines
