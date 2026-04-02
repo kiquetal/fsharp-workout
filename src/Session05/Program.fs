@@ -40,7 +40,7 @@ type Order = {
 // Create 8-10 orders with different customers, products, dates.
 // This is your test dataset.
 
- let sampleOrders = [{
+let sampleOrders = [{
     Id = "order1"
     Customer = CustomerId "customer1"
     Lines = [
@@ -136,7 +136,19 @@ type Order = {
 //
 // Key functions: List.map, List.sumBy, List.maxBy, List.averageBy
 
-// TODO: implement
+let orderTotal (order: Order) : float =
+        order.Lines |> List.sumBy (fun line -> float line.Quantity * line.UnitPrice)
+  
+let totalRevenue (orders: Order list) : float =
+        orders |> List.sumBy orderTotal
+
+//just which order has the most different products, not the most quantity
+let largestOrder (orders: Order list) : Order option =
+    orders |> List.maxBy (fun order -> List.length order.Lines) |> Some
+
+let largestQuanityOrder (orders: Order list) : Order option =
+    orders |> List.maxBy (fun order -> order.Lines |> List.sumBy _.Quantity) |> Some
+
 
 
 // --- Step 4: Grouping and filtering ---
