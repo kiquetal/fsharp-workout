@@ -98,8 +98,15 @@ module parsing =
 //
 // val validateReading : Reading -> Result<Reading, ValidationError>
 
-// TODO: module Validation = ...
 
+module validation =
+    let validateReading (reading: Reading) : Result<Reading, Error> =
+        let tempValue = constructors.temperatureValue reading.Temperature
+        let humValue = constructors.humidityValue reading.Humidity
+        if tempValue < -50.0 || tempValue > 60.0 then Error (ValidationError $"Temperature out of range: {tempValue}")
+        else if humValue < 0.0 || humValue > 100.0 then Error (ValidationError $"Humidity out of range: {humValue}")
+        else if reading.Timestamp > DateTime.Now then Error (ValidationError $"Timestamp cannot be in the future: {reading.Timestamp}")
+        else Ok reading
 
 // --- Step 4: Analytics module ---
 // Aggregate readings using Session 5 patterns
