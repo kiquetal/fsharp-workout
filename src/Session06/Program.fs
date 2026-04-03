@@ -199,6 +199,7 @@ let main _ =
     let validated = readings |> List.choose (validation.validateReading >> Result.toOption)
     let validationErrors =
         readings
+        
         |> List.choose (fun r ->
             match validation.validateReading r with
             | Error e -> Some e
