@@ -58,8 +58,40 @@ module constructors =
 // val parseLine : string -> Result<Reading, ParseError>
 // val parseAll : string list -> Reading list * ParseError list
 
-// TODO: module Parsing = ...
-
+module parsing =
+    let parseLine (line: string) : Result<Reading, Error> = 
+        let splitLine = line.Split(',')
+        if splitLine.Length <> 4 then Error (ParseError $"Invalid line format: {line}")
+        else
+            let stationId = StationId splitLine.[0]
+            let tempResult = match System.Double.TryParse splitLine.[1] with
+                                | (true, temp) -> constructors.createTemperature temp
+                                | (false, _) -> Error (ParseError $"Invalid temperature: {splitLine.[1]}")
+            let humResult = match System.Double.TryParse splitLine.[2] with
+                                | (true, hum) -> constructors.createHumidity hum
+                                | (false, _) -> Error (ParseError $"Invalid humidity: {splitLine.[2]}")
+            let timestampResult = match DateTime.TryParse splitLine.[3] with
+                                    | (true, dt) -> Ok dt
+                                    | (false, _) -> Error (ParseError $"Invalid timestamp: {splitLine.[3]}")
+            match tempResult, humResult, timestampResult with
+            | Ok temp, Ok hum, Ok timestamp -> Ok { Station = stationId; Temperature = temp; Humidity = hum; Timestamp = timestamp }
+            | Error e, _, _ -> Error e
+            | _, Error e, _ -> Error e
+            | _, _, Error e -> Error e
+            
+    let parseAll (lines: string list): (Reading list * Error list) =
+        let readingOk, errorRead =
+             lines |> List.map parseLine 
+              |> List.partition (fun result -> match result with | Ok _ -> true | Error _ -> false)
+        let okList = readingOk |> List.choose (fun r->
+                    match r with
+                    | Ok reading -> Some reading
+                    | Error _ -> None)
+        let errorList = errorRead |> List.choose (fun r->
+                    match r with
+                    | Ok _ -> None
+                    | Error e -> Some e)
+        (okList, errorList)         
 
 // --- Step 3: Validation module ---
 // Business rules: temp between -50 and 60, humidity 0-100, not in future
