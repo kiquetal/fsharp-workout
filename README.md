@@ -18,7 +18,7 @@ A structured, hands-on F# training program designed for deep-focus sessions. Eac
 | 3 | **Pattern Matching & Recursion** | Exhaustive matching, active patterns, recursive data structures | 90 min | ✅ Done |
 | 4 | **Modules & Domain Modeling** | Module design, encapsulation, a small bounded context end-to-end | 90 min | ✅ Done |
 | 5 | **Collections & Pipelines** | `List.map`, `List.groupBy`, `List.collect`, pipeline composition with `\|>` and `>>` | 90 min | ✅ Done |
-| 6 | **Integration & Capstone** | JSON serialization, HTTP, CLI app — tie everything together | 90 min | ⬜ |
+| 6 | **Integration & Capstone** | JSON serialization, HTTP, CLI app — tie everything together | 90 min | ✅ Done |
 
 ## Part II — State Machines & Data Transformation
 
@@ -119,6 +119,21 @@ After building state machines by hand (Sessions 7–8), you'll understand what t
 - `|>` vs `>>` — "run now" vs "save for later"
 
 → [Full details](docs/session05.md)
+
+### Session 6 — Integration & Capstone ✅
+
+**Objective:** Tie together everything from Sessions 1–5 into one cohesive CLI application.
+
+**What you built:**
+- Weather Station Dashboard — parse, validate, analyze, report
+- `Parsing` module — safe string parsing with `TryParse`, `parseAll` with partition
+- `Validation` module — business rules on top of smart constructors
+- `Analytics` module — `averageBy`, `groupBy`, `minBy`/`maxBy`, daily aggregates
+- `Report` module — formatted output, per-station summaries, error reporting
+- Smart constructors with `private` DUs for `Temperature` and `Humidity`
+- Full pipeline: raw strings → typed data → validated data → analytics → report
+
+→ [Full details](docs/session06.md)
 
 ## Session Format
 
