@@ -118,7 +118,25 @@ module validation =
 // val readingsByStation : Reading list -> (StationId * Reading list) list
 // val dailyAverages : Reading list -> (DateTime * float * float) list
 
-// TODO: module Analytics = ...
+module analytics =
+    let averareTemperature (readings: Reading list) : float =
+        readings |> List.averageBy (fun r -> constructors.temperatureValue r.Temperature)
+    let averageHumidity (readings: Reading list) : float =
+        readings |> List.averageBy (fun r -> constructors.humidityValue r.Humidity)
+    let hottestReading (readings: Reading list) : Reading option =
+        match readings with
+        | [] -> None
+        | _ -> readings |> List.maxBy (fun r -> constructors.temperatureValue r.Temperature) |> Some
+    let coldestReading (readings: Reading list) : Reading option =
+        match readings with
+        | [] -> None
+        | _ -> readings |> List.minBy (fun r -> constructors.temperatureValue r.Temperature) |> Some 
+    let readingsByStation (readings: Reading list) : (StationId * Reading list) list =
+        let readingByStation = readings |> List.groupBy _.Station
+        readingByStation
+        
+        
+       
 
 
 // --- Step 5: Report module ---
