@@ -154,13 +154,15 @@ src/
   Session02/       ← Pipelines & Composition
   Session03/       ← Pattern Matching & Recursion
   Session04/       ← Modules & Domain Modeling
-  Session05/       ← Async & Concurrency
+  Session05/       ← Collections & Pipelines
   Session06/       ← Integration & Capstone
 docs/
   session01.md     ← Full session 1 details, exercises, concepts
   session02.md     ← Full session 2 details, exercises, concepts
   session03.md     ← Full session 3 details, exercises, concepts
   session04.md     ← Full session 4 details, exercises, concepts
+  session05.md     ← Full session 5 details, exercises, concepts
+  session06.md     ← Full session 6 details, exercises, concepts
   patterns.md      ← Railway-oriented programming, parse don't validate
   java21-functional.md ← F# patterns translated to Java 21+
   learning-notes.md    ← Validation boundaries, complex types, Result.sequence
