@@ -152,8 +152,23 @@ module analytics =
 // val stationSummary : StationId -> Reading list -> string
 // val fullReport : Reading list -> ParseError list -> string
 
-// TODO: module Report = ...
-
+module reporting =
+    let stationSummary (stationId: StationId) (reading: Reading list) : string =
+        let readingsForStation = reading |> List.filter (fun r -> r.Station = stationId)
+        let avgTemp = analytics.averareTemperature readingsForStation
+        let avgHum = analytics.averageHumidity readingsForStation
+        sprintf "Station %A: Average Temp = %.2f°C, Average Humidity = %.2f%%" stationId avgTemp avgHum
+        
+    let fullReport (readings: Reading list) (errors: Error list) : string =
+        let stationIds = readings |> List.map _.Station |> List.distinct
+        let stationReports = stationIds |> List.map (fun id -> stationSummary id readings)
+        let errorReport = 
+            if errors.IsEmpty then "No errors."
+            else "Errors:\n" + (errors |> List.map (function
+                | ParseError e -> $"  Parse error: {e}"
+                | ValidationError e -> $"  Validation error: {e}") |> String.concat "\n")
+        String.concat "\n" (stationReports @ [errorReport])
+      
 
 // --- Sample data ---
 let rawLines = [
@@ -178,6 +193,49 @@ let rawLines = [
 // --- Step 6: Wire it all up ---
 [<EntryPoint>]
 let main _ =
-    printfn "Session 6 — Weather Station Dashboard"
-    // TODO: parse → validate → analyze → report
+    printfn "=== Weather Station Dashboard ===\n"
+
+    let (readings, parseErrors) = parsing.parseAll rawLines
+    let validated = readings |> List.choose (validation.validateReading >> Result.toOption)
+    let validationErrors =
+        readings
+        |> List.choose (fun r ->
+            match validation.validateReading r with
+            | Error e -> Some e
+            | Ok _ -> None)
+
+    printfn "Parsed: %d readings, %d parse errors, %d validation errors\n"
+        (List.length readings) (List.length parseErrors) (List.length validationErrors)
+
+    printfn "=== Overall ==="
+    printfn "  Avg temperature: %.2f°C" (analytics.averareTemperature validated)
+    printfn "  Avg humidity: %.2f%%" (analytics.averageHumidity validated)
+
+    match analytics.hottestReading validated with
+    | Some r -> printfn "  Hottest: %.1f°C at %A (%A)"
+                    (constructors.temperatureValue r.Temperature) r.Timestamp r.Station
+    | None -> ()
+    match analytics.coldestReading validated with
+    | Some r -> printfn "  Coldest: %.1f°C at %A (%A)"
+                    (constructors.temperatureValue r.Temperature) r.Timestamp r.Station
+    | None -> ()
+
+    printfn "\n=== Per Station ==="
+    analytics.readingsByStation validated
+    |> List.iter (fun (StationId id, _) ->
+        printfn "%s" (reporting.stationSummary (StationId id) validated))
+
+    printfn "\n=== Daily Averages ==="
+    analytics.dailyAverages validated
+    |> List.iter (fun (date, avgT, avgH) ->
+        printfn "  %s: %.2f°C, %.2f%%" (date.ToString("yyyy-MM-dd")) avgT avgH)
+
+    printfn "\n=== Errors ==="
+    let allErrors = parseErrors @ validationErrors
+    if allErrors.IsEmpty then printfn "  No errors."
+    else allErrors |> List.iter (fun e ->
+        match e with
+        | ParseError msg -> printfn "  Parse: %s" msg
+        | ValidationError msg -> printfn "  Validation: %s" msg)
+
     0
