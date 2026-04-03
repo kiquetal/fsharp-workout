@@ -42,6 +42,16 @@ type Error =
     | ParseError of string
     | ValidationError of string
 
+module constructors =
+    let createTemperature(temp: float): Result<Temperature, Error> =
+        if temp >= -50.0 && temp <= 60.0 then Ok (Temperature temp)
+        else Error (ValidationError $"Invalid temperature: {temp}")
+    let createHumidity(hum: float): Result<Humidity, Error> =
+        if hum >= 0.0 && hum <= 100.0 then Ok (Humidity hum)
+        else Error (ValidationError $"Invalid humidity: {hum}")
+    let temperatureValue (Temperature t) = t
+    let humidityValue (Humidity h) = h
+    
 // --- Step 2: Parsing module ---
 // Parse "station-01,23.5,65,2024-03-15T10:30:00" into a Reading
 //
