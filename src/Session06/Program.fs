@@ -135,7 +135,14 @@ module analytics =
         let readingByStation = readings |> List.groupBy _.Station
         readingByStation
         
-        
+    let dailyAverages(reading: Reading list): (DateTime * float * float) list =
+       let groupByDay = reading |> List.groupBy _.Timestamp.Date
+       groupByDay |>
+       List.map (fun (date, readings) ->
+                let avgTemp = readings |> List.averageBy (fun r -> constructors.temperatureValue r.Temperature)
+                let avgHum = readings |> List.averageBy (fun r -> constructors.humidityValue r.Humidity)
+                (date, avgTemp, avgHum))
+            
        
 
 
